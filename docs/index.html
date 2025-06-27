@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Questionnaire vocal interactif</title>
+</head>
+<body>
+  <h1>Questionnaire DSM-5 (Vocal)</h1>
+  <div id="status"></div>
+  <button id="startBtn">Commencer</button>
+  <div id="questionnaire" style="display:none;">
+    <p id="question"></p>
+    <button id="speakBtn">Répondre à voix haute</button>
+    <p id="response"></p>
+    <button id="nextBtn" style="display:none;">Question suivante</button>
+  </div>
+  <div id="summary" style="display:none;">
+    <h2>Merci !</h2>
+    <p>Voici vos réponses :</p>
+    <ul id="answersList"></ul>
+    <button id="copyBtn">Copier les réponses</button>
+  </div>
+  <script>
+    // --- Personnalise ici tes questions ---
+    const questions = [
+      "Ressentez-vous de l'anxiété ou une tension excessive ?",
+      "Avez-vous du mal à contrôler vos inquiétudes ?",
+      "Avez-vous des troubles du sommeil ?",
+      "Votre humeur est-elle souvent dépressive ?"
+      // Ajoute toutes les questions DSM-5 que tu veux ici
+    ];
+
+    let responses = [];
+    let current = 0;
+
+    const synth = window.speechSynthesis;
+    const questionEl = document.getElementById("question");
+    const responseEl = document.getElementById("response");
+    const startBtn = document.getElementById("startBtn");
+    const questionnaireDiv = document.getElementById("questionnaire");
+    const nextBtn = document.getElementById("nextBtn");
+    const summaryDiv = document.getElementById("summary");
+    const answersList = document.getElementById("answersList");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusDiv = document.getElementById("status");
+    const speakBtn = document.getElementById("speakBtn");
+
+    function askQuestion(idx) {
+      questionEl.textContent = questions[idx];
+      responseEl.textContent = "";
+      nextBtn.style.display = "none";
+      // Synthèse vocale
+      const utter = new SpeechSynthesisUtterance(questions[idx]);
+      utter.lang = "fr-FR";
+      synth.speak(utter);
+    }
+
+    function startRecognition() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilise Chrome ou Edge)";
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = "fr-FR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+      responseEl.textContent = "Écoute en cours...";
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        responseEl.textContent = transcript;
+        responses[current] = transcript;
+        nextBtn.style.display = "inline";
+      };
+      recognition.onerror = function(event) {
+        responseEl.textContent = "Erreur : " + event.error;
+      };
+    }
+
+    startBtn.onclick = function() {
+      startBtn.style.display = "none";
+      questionnaireDiv.style.display = "block";
+      askQuestion(current);
+    };
+
+    speakBtn.onclick = function() {
+      startRecognition();
+    };
+
+    nextBtn.onclick = function() {
+      current++;
+      if (current < questions.length) {
+        askQuestion(current);
+      } else {
+        questionnaireDiv.style.display = "none";
+        summaryDiv.style.display = "block";
+        // Affiche la liste des réponses
+        answersList.innerHTML = "";
+        questions.forEach((q, i) => {
+          const li = document.createElement("li");
+          li.textContent = q + " — " + (responses[i] || "");
+          answersList.appendChild(li);
+        });
+      }
+    };
+
+    copyBtn.onclick = function() {
+      const txt = questions.map((q, i) => q + " : " + (responses[i] || "")).join("\n");
+      navigator.clipboard.writeText(txt);
+      alert("Réponses copiées !");
+    };
+  </script>
+</body>
+</html>
