@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Questionnaire vocal interactif</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+    #questionnaire, #summary { background: #fff; padding: 2em; border-radius: 1em; box-shadow: 0 2px 10px #0001; max-width: 500px; margin: auto; }
+    button { margin: 1em 0.2em; padding: 0.7em 1.5em; border-radius: 1em; border: none; background: #0056cc; color: #fff; font-size: 1.1em; cursor: pointer; }
+    button:disabled { background: #aaa; }
+    h1, h2 { color: #0056cc; }
+    #status { color: #b00; font-weight: bold; margin-bottom: 1em; }
+    #answersList { text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Questionnaire DSM-5 (Vocal)</h1>
+  <div id="status"></div>
+  <button id="startBtn">Commencer</button>
+  <div id="questionnaire" style="display:none;">
+    <p id="question"></p>
+    <button id="speakBtn">Répondre à voix haute</button>
+    <p id="response"></p>
+    <button id="nextBtn" style="display:none;">Question suivante</button>
+  </div>
+  <div id="summary" style="display:none;">
+    <h2>Merci !</h2>
+    <p>Voici vos réponses :</p>
+    <ul id="answersList"></ul>
+    <button id="copyBtn">Copier les réponses</button>
+  </div>
+  <script>
+    // --- Personnalise ici tes questions ---
+    const questions = [
+      "Ressentez-vous de l'anxiété ou une tension excessive ?",
+      "Avez-vous du mal à contrôler vos inquiétudes ?",
+      "Avez-vous des troubles du sommeil ?",
+      "Votre humeur est-elle souvent dépressive ?"
+      // Ajoute ici d'autres questions DSM-5 si tu veux !
+    ];
+
+    let responses = [];
+    let current = 0;
+
+    const synth = window.speechSynthesis;
+    const questionEl = document.getElementById("question");
+    const responseEl = document.getElementById("response");
+    const startBtn = document.getElementById("startBtn");
+    const questionnaireDiv = document.getElementById("questionnaire");
+    const nextBtn = document.getElementById("nextBtn");
+    const summaryDiv = document.getElementById("summary");
+    const answersList = document.getElementById("answersList");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusDiv = document.getElementById("status");
+    const speakBtn = document.getElementById("speakBtn");
+
+    function askQuestion(idx) {
+      questionEl.textContent = questions[idx];
+      responseEl.textContent = "";
+      nextBtn.style.display = "none";
+      // Synthèse vocale (parle la question)
+      const utter = new SpeechSynthesisUtterance(questions[idx]);
+      utter.lang = "fr-FR";
+      synth.speak(utter);
+    }
+
+    function startRecognition() {
+      if (!('webkitSpeechRecognition' in wi
