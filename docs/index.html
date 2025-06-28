@@ -247,8 +247,8 @@
       window.speechSynthesis.speak(utter);
     };
 
-    //speakBtn.onclick = function() { if(!isPaused) startRecognition(); };
-    //nextBtn.onclick = function() {
+    speakBtn.onclick = function() { if(!isPaused) startRecognition(); };
+    nextBtn.onclick = function() {
       if (isPaused) return;
       current++;
       if (current < questions.length) {
