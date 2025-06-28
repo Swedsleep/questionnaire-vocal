@@ -211,21 +211,27 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
 
     // --- Gestion boutons & événements
     startBtn.onclick = function() {
-      const code = codeInput.value.trim();
-      if (!/^\d{4}$/.test(code)) {
-        statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
-        return;
-      }
-      codePerso = code;
-      mainDiv.style.display = "none";
-      questionnaireDiv.style.display = "block";
-      current = 0;
-      responses = [];
-      isPaused = false;
-      resumeBtn.style.display = "none";
-      pauseBtn.style.display = "inline";
-      askQuestion(current);
-    };
+  const code = codeInput.value.trim();
+  if (!/^\d{4}$/.test(code)) {
+    statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
+    return;
+  }
+  // LIRE l’intro à voix haute
+  const utter = new SpeechSynthesisUtterance(introTexte);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    codePerso = code;
+    mainDiv.style.display = "none";
+    questionnaireDiv.style.display = "block";
+    current = 0;
+    responses = [];
+    isPaused = false;
+    resumeBtn.style.display = "none";
+    pauseBtn.style.display = "inline";
+    askQuestion(current);
+  };
+  window.speechSynthesis.speak(utter);
+};
 
     speakBtn.onclick = function() { startRecognition(); };
     nextBtn.onclick = function() {
