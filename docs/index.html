@@ -169,9 +169,17 @@
       questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
       responseEl.textContent = "";
       nextBtn.style.display = "none";
-      speak(questions[idx].text);
+// Lecture à voix haute PUIS reconnaissance vocale
+  const utter = new SpeechSynthesisUtterance(questions[idx].text);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    if (questionnaireDiv.style.display === "block" && !isPaused) {
+      startRecognition();
     }
-
+  };
+ window.speechSynthesis.speak(utter);
+}
+   
     function startRecognition() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
@@ -187,22 +195,28 @@
       responseEl.textContent = "Écoute en cours...";
       recognition.onresult = function(event) {
         const transcript = event.results[0][0].transcript.trim();
-        responseEl.textContent = transcript;
-        if (/^(suivant|next)$/i.test(transcript)) {
-          nextBtn.click();
-        } else if (/^(pause)$/i.test(transcript)) {
-          pauseBtn.click();
-        } else if (/^(reprendre|continue|resume)$/i.test(transcript)) {
-          resumeBtn.click();
-        } else {
-          responses[current] = transcript;
-          nextBtn.style.display = "inline";
-        }
-      };
-      recognition.onerror = function(event) {
-        responseEl.textContent = "Erreur : " + event.error;
-      };
+        if(extraCommands) {
+      if(transcript.includes("pause")) { pauseBtn.click(); return; }
+      if(transcript.includes("reprend")) { resumeBtn.click(); return; }
+      // Tu peux garder la commande "suivant" SI tu veux la sécurité
+      // if(transcript.includes("suivant")) { nextBtn.click(); return; }
     }
+    responseEl.textContent = transcript;
+    responses[current] = transcript;
+    // Passage automatique à la question suivante :
+    setTimeout(() => {
+      current++;
+      if (current < questions.length) {
+        askQuestion(current);
+      } else {
+        showSummary();
+      }
+    }, 900); // 0.9 seconde pour laisser le temps de lire l'écran
+  };
+  recognition.onerror = function(event) {
+    responseEl.textContent = "Erreur : " + event.error;
+  };
+}
 
     startBtn.onclick = function() {
       const code = codeInput.value.trim();
