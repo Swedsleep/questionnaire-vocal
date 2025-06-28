@@ -67,71 +67,105 @@ const partTitles = ["Première partie : Symptômes principaux",
 const partBreaks = [37];
 
 // --- QUESTIONS (~53, SECTIONS 1 À 23) ---
-const questions = [
-  { section: 1, text: "quel est votre age? " }, 
-  { text: "etes vous un homme, une femme, autre ?" }, 
-  { text: "quel est votre profession? " }, 
-  { section: 2, text: "Y a-t-il des antécédents médicaux connus ? Si oui, veuillez préciser.uel est votre age? " }, 
-  { text: "Des traitements médicamenteux sont-ils actuellement suivis ? Si oui, veuillez indiquer lesquels, y compris les médicaments sans ordonnance et les compléments alimentaires" }, 
-  { section: 3, text: "Ressentez-vous de la nervosité, de l’anxiété ou une tension excessive ? " }, 
-  { text: "Avez-vous tendance à vous inquiéter excessivement pour diverses choses, ou à ne pas pouvoir contrôler vos inquiétudes ?" }, 
-  { text: "Avez-vous des difficultés à vous concentrer, par exemple en lisant ou en regardant la télévision ? " },
-  { text: "Vous sentez-vous agité(e), avez-vous du mal à rester assis(e) tranquillement ? " },
-  { text: "Observez-vous des troubles de l’appétit, tels qu’une perte ou une augmentation de l’appétit ? " }, 
-  { text: "Ressentez-vous un sentiment d’échec ou d’avoir déçu vous-même ou votre entourage ? " },  
-  { section: 1, text: "Avez-vous ressenti une tristesse ou une humeur dépressive ?" },
-  { section: 2, text: "Avez-vous perdu de l'intérêt ou du plaisir pour la plupart des activités ?" },
-  { section: 3, text: "Avez-vous eu des troubles du sommeil (insomnie ou hypersomnie) ?" },
-  { section: 4, text: "Avez-vous ressenti de la fatigue ou un manque d'énergie ?" },
-  { section: 5, text: "Avez-vous constaté des changements d'appétit ou de poids ?" },
-  { section: 6, text: "Vous êtes-vous senti(e) inutile ou avec une faible estime de vous-même ?" },
-  { section: 7, text: "Avez-vous eu des difficultés de concentration ou de prise de décision ?" },
-  { section: 8, text: "Avez-vous eu des idées de mort ou de suicide ?" },
-  { section: 9, text: "Avez-vous ressenti de l'anxiété ou une tension excessive ?" },
-  { section: 10, text: "Avez-vous eu du mal à contrôler vos inquiétudes ?" },
-  { section: 11, text: "Avez-vous eu des attaques de panique ?" },
-  { section: 12, text: "Avez-vous eu peur dans des situations sociales ou de performance ?" },
-  { section: 13, text: "Avez-vous évité certaines situations par peur ?" },
-  { section: 14, text: "Avez-vous ressenti des peurs intenses, irrationnelles, pour certains objets ou situations ?" },
-  { section: 15, text: "Avez-vous vécu un événement traumatisant ?" },
-  { section: 16, text: "Avez-vous eu des cauchemars, des flashbacks ou évité certains souvenirs ?" },
-  { section: 17, text: "Avez-vous eu des obsessions ou des compulsions répétitives ?" },
-  { section: 18, text: "Avez-vous constaté une consommation excessive de substances (alcool, médicaments, drogues) ?" },
-  { section: 19, text: "Avez-vous ressenti des envies irrépressibles de consommer une substance ?" },
-  { section: 20, text: "Avez-vous eu des difficultés à contrôler votre consommation de substance ?" },
-  { section: 21, text: "Avez-vous négligé vos obligations à cause d'une substance ?" },
-  { section: 22, text: "Avez-vous continué la consommation malgré des problèmes liés ?" },
-  { section: 23, text: "Avez-vous constaté une tolérance accrue ou des symptômes de sevrage ?" },
-  { section: 24, text: "Avez-vous eu des périodes d’irritabilité, colère ou hostilité ?" },
-  { section: 25, text: "Avez-vous été impliqué dans des disputes ou bagarres ?" },
-  { section: 26, text: "Avez-vous endommagé des biens ou blessé des personnes ?" },
-  { section: 27, text: "Avez-vous eu des difficultés à respecter des règles ou des lois ?" },
-  { section: 28, text: "Avez-vous pris des risques inconsidérés ou des comportements impulsifs ?" },
-  { section: 29, text: "Avez-vous eu des comportements sexuels à risque ?" },
-  { section: 30, text: "Avez-vous eu des troubles de l’alimentation (restriction, vomissements, excès) ?" },
-  { section: 31, text: "Avez-vous eu une image corporelle très négative ?" },
-  { section: 32, text: "Avez-vous eu des troubles du comportement alimentaire en cachette ?" },
-  { section: 33, text: "Avez-vous eu des crises de boulimie ou de grignotage incontrôlées ?" },
-  { section: 34, text: "Avez-vous eu des difficultés à contrôler votre poids ?" },
-  { section: 35, text: "Avez-vous utilisé des laxatifs, diurétiques ou fait du sport à l’excès pour contrôler votre poids ?" },
-  { section: 36, text: "Avez-vous ressenti un sentiment de honte ou de culpabilité après avoir mangé ?" },
-  { section: 37, text: "Avez-vous eu des troubles du contrôle des impulsions (achats, jeux, etc.) ?" },
-  { section: 38, text: "Avez-vous eu des comportements obsessionnels ou des rituels répétitifs ?" },
-  { section: 39, text: "Avez-vous constaté des changements importants de votre humeur (hauts et bas rapides) ?" },
-  { section: 40, text: "Avez-vous eu des périodes d’euphorie ou d’excitation inhabituelle ?" },
-  { section: 41, text: "Avez-vous eu des périodes d’activité physique ou verbale anormalement augmentée ?" },
-  { section: 42, text: "Avez-vous eu des périodes où vous vous sentiez invincible ou avec une confiance excessive ?" },
-  { section: 43, text: "Avez-vous eu des épisodes de repli, retrait social ou perte de contact avec vos proches ?" },
-  { section: 44, text: "Avez-vous eu des pensées étranges, magiques ou des croyances inhabituelles ?" },
-  { section: 45, text: "Avez-vous eu des hallucinations (voir, entendre, sentir des choses qui n’existent pas) ?" },
-  { section: 46, text: "Avez-vous eu des difficultés à organiser vos pensées ou à suivre une conversation ?" },
-  { section: 47, text: "Avez-vous eu des troubles de la mémoire récents ou anciens ?" },
-  { section: 48, text: "Avez-vous eu des difficultés à accomplir des tâches du quotidien ?" },
-  { section: 49, text: "Avez-vous remarqué des changements de personnalité ou de comportement inattendus ?" },
-  { section: 50, text: "Avez-vous remarqué des tics, mouvements involontaires, ou des difficultés de coordination ?" },
-  { section: 51, text: "Avez-vous eu des difficultés de parole, d’écriture, ou de compréhension du langage ?" },
-  { section: 52, text: "Avez-vous constaté d’autres symptômes non cités ici, préoccupants pour vous ou votre entourage ?" },
-  { section: 53, text: "Avez-vous, au cours des dernières semaines, bénéficié d’un soutien particulier (médical, psychologique, familial, social) ?" }
+ const questions = [
+  // Section 1
+  { section: 1, text: "Veuillez indiquer votre code d’identification." },
+  { text: "Quel est votre âge ?" },
+  { text: "Quel est votre sexe ?" },
+  { text: "Quel est votre profession ?" },
+
+  // Section 2
+  { section: 2, text: "Y a-t-il des antécédents médicaux connus ? Si oui, veuillez préciser." },
+  { text: "Des traitements médicamenteux sont-ils actuellement suivis ? Si oui, veuillez indiquer lesquels, y compris les médicaments sans ordonnance et les compléments alimentaires." },
+
+  // Section 3
+  { section: 3, text: "Ressentez-vous de la nervosité, de l’anxiété ou une tension excessive ?" },
+  { text: "Avez-vous tendance à vous inquiéter excessivement pour diverses choses, ou à ne pas pouvoir contrôler vos inquiétudes ?" },
+  { text: "Avez-vous des difficultés à vous concentrer, par exemple en lisant ou en regardant la télévision ?" },
+  { text: "Vous sentez-vous agité(e), avez-vous du mal à rester assis(e) tranquillement ?" },
+  { text: "Observez-vous des troubles de l’appétit, tels qu’une perte ou une augmentation de l’appétit ?" },
+  { text: "Ressentez-vous un sentiment d’échec ou d’avoir déçu vous-même ou votre entourage ?" },
+
+  // Section 4
+  { section: 4, text: "Manquez-vous d’intérêt ou de plaisir à faire des choses qui vous plaisaient auparavant ?" },
+  { text: "Ressentez-vous une humeur dépressive, une tristesse ou un sentiment de désespoir ?" },
+  { text: "Vous sentez-vous fatigué(e) ou avez-vous un manque d’énergie ?" },
+
+  // Section 5
+  { section: 5, text: "Répétez-vous certains gestes, comme vous laver les mains, compter, vérifier ou organiser des objets ? (Si non, passez à la section suivante)" },
+  { text: "Ces comportements sont-ils effectués en réponse à une pensée obsessionnelle ou une peur ?" },
+  { text: "Ces pensées ou comportements occupent-ils plus d’une heure par jour ou perturbent-ils significativement votre vie quotidienne ?" },
+
+  // Section 6
+  { section: 6, text: "Êtes-vous facilement irritable ou en colère ?" },
+  { text: "Estimez-vous que vos accès de colère sont disproportionnés par rapport à la situation ?" },
+
+  // Section 7
+  { section: 7, text: "Traversez-vous des périodes où vous vous sentez particulièrement énergique, euphorique ou surexcité(e) ?" },
+  { text: "Lors de ces périodes, avez-vous tendance à entreprendre des activités qui pourraient avoir des conséquences négatives ?" },
+
+  // Section 8
+  { section: 8, text: "Vous arrive-t-il de vous sentir détaché(e) de vous-même ou de votre environnement ?" },
+  { text: "Avez-vous déjà ressenti une impression d’irréalité à propos de votre environnement ?" },
+
+  // Section 9
+  { section: 9, text: "Rencontrez-vous des difficultés de mémoire, comme oublier des informations ou perdre le sens de l’orientation (par exemple, retrouver votre chemin) ?" },
+
+  // Section 10
+  { section: 10, text: "Dans quelle mesure ces difficultés ont-elles affecté votre capacité à travailler, à vous occuper de votre domicile ou à entretenir des relations avec autrui ?" },
+  { text: "À quel point estimez-vous que votre situation de vie actuelle et vos relations sociales vous apportent du soutien ?" },
+
+  // Section 11
+  { section: 11, text: "Utilisez-vous du tabac, de l’alcool, des drogues ou de la caféine ? Si oui, veuillez indiquer la fréquence et la quantité." },
+
+  // Section 12
+  { section: 12, text: "Ressentez-vous des douleurs chroniques ou un inconfort physique ? Si oui, merci de préciser." },
+  { text: "Y a-t-il d’autres symptômes physiques que vous avez remarqués et qui vous préoccupent ?" },
+  { text: "Comment évalueriez-vous votre état de santé physique global (mauvais, passable, bon, très bon, excellent) ?" },
+
+  // Section 13
+  { section: 13, text: "Avez-vous eu des pensées selon lesquelles il vaudrait mieux être mort(e) ou vous blesser d’une quelconque manière ?" },
+
+  // Section 14
+  { section: 14, text: "Comment évalueriez-vous la qualité générale de votre sommeil ?" },
+  { text: "Éprouvez-vous des difficultés à vous endormir ou à rester endormi(e) durant la nuit ?" },
+  { text: "Vous réveillez-vous le matin en vous sentant reposé(e) ou encore fatigué(e) ?" },
+  { text: "Avez-vous des troubles du sommeil, tels que des cauchemars, du somnambulisme ou des réveils fréquents ?" },
+  { text: "Utilisez-vous des médicaments ou des substances pour faciliter le sommeil ?" },
+  { text: "Des changements de mode de vie ou des événements récents ont-ils modifié votre rythme de sommeil ?" },
+
+  // Section 15
+  { section: 15, text: "À quelle fréquence pratiquez-vous une activité physique ou de l’exercice ?" },
+
+  // Section 16
+  { section: 16, text: "Un diagnostic de trouble psychique a-t-il déjà été posé auparavant ?" },
+  { text: "Un traitement pour des difficultés psychiques a-t-il déjà été suivi (thérapie, conseil, médication) ? Si oui, merci de préciser." },
+
+  // Section 17
+  { section: 17, text: "Y a-t-il un sujet spécifique que vous souhaitez aborder lors de la consultation ?" },
+  { text: "Quels sont vos objectifs ou attentes en consultant actuellement ?" },
+
+  // Section 18
+  { section: 18, text: "Avez-vous perçu des voix que les autres ne semblent pas entendre ?" },
+  { text: "Avez-vous eu des croyances ou des idées que d’autres personnes considèrent comme étranges ou inhabituelles ?" },
+
+  // Section 19
+  { section: 19, text: "Vous arrive-t-il de vous inquiéter de façon excessive pour votre poids ou votre apparence corporelle ?" },
+  { text: "Avez-vous eu des épisodes de restriction alimentaire importante, de vomissements volontaires, ou de prises alimentaires excessives et incontrôlables ?" },
+
+  // Section 20
+  { section: 20, text: "Avez-vous constaté une baisse notable de votre intérêt ou de votre satisfaction concernant votre sexualité ?" },
+
+  // Section 21
+  { section: 21, text: "Avez-vous été exposé(e) à un événement traumatique qui continue à vous perturber (cauchemars, flashbacks, évitement) ?" },
+  { text: "Présentez-vous des réactions de stress importantes en lien avec des souvenirs douloureux ?" },
+
+  // Section 22
+  { section: 22, text: "Rencontrez-vous souvent des difficultés à rester concentré(e), à terminer ce que vous commencez, ou à rester en place ?" },
+  { text: "Êtes-vous fréquemment distrait(e) ou ressentez-vous une agitation intérieure ou physique inhabituelle ?" },
+
+  // Section 23
+  { section: 23, text: "Avez-vous été exposé(e) à des situations de violence ou de maltraitance ? Si oui, souhaitez-vous en parler ?" }
 ];
 
 // --- Variables ---
