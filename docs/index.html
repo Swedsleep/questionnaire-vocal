@@ -229,23 +229,27 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
     }
 
     // --- Gestion boutons & événements
-    startBtn.onclick = function() {
-      const code = codeInput.value.trim();
-      if (!/^\d{4}$/.test(code)) {
-        statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
-        return;
-      }
-      codePerso = code;
-      mainDiv.style.display = "none";
-      questionnaireDiv.style.display = "block";
-      current = 0;
-      responses = [];
-      isPaused = false;
-      resumeBtn.style.display = "none";
-      pauseBtn.style.display = "inline";
-      askQuestion(current);
-    };
-
+    
+startBtn.onclick = function() {
+  const code = codeInput.value.trim();
+  if (!/^\d{4}$/.test(code)) {
+    statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
+    return;
+  }
+  codePerso = code;
+  mainDiv.style.display = "none";
+  questionnaireDiv.style.display = "block";
+  current = 0;
+  responses = [];
+  isPaused = false;
+  resumeBtn.style.display = "none";
+  pauseBtn.style.display = "inline";
+  // --- Lecture à voix haute de l’intro puis 1ère question après 7 secondes
+  speak(introTexte);
+  setTimeout(() => {
+    askQuestion(current);
+  }, 7000);
+};
     speakBtn.onclick = function() { startRecognition(); };
     nextBtn.onclick = function() {
       current++;
