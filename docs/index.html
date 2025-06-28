@@ -127,20 +127,6 @@
       { section: 52, text: "Avez-vous constaté d’autres symptômes non cités ici, préoccupants pour vous ou votre entourage ?" },
       { section: 53, text: "Avez-vous, au cours des dernières semaines, bénéficié d’un soutien particulier (médical, psychologique, familial, social) ?" }
     ]);
-Remarque :
-
-Le .concat([ ... ]) relie proprement les deux parties dans le même tableau questions.
-
-Si tu veux, tu peux simplement coller TOUT le bloc questions = [ ... ] .concat([ ... ]);
-
-Le numéro 37 dans partBreaks (dans la première partie du code) indique à l’interface de basculer sur la 2e partie à la 37e question.
-
-3/4 — Toute la logique JS
-Colle la partie suivante APRÈS le tableau questions :
-
-js
-Kopiera
-Redigera
     // --- Variables ---
     let responses = [];
     let current = 0;
@@ -176,7 +162,7 @@ Redigera
       utter.lang = "fr-FR";
       window.speechSynthesis.speak(utter);
     }
-
+    
     function askQuestion(idx) {
       // Afficher le titre de la partie selon le numéro de la question
       if (idx === 0) {
