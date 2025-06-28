@@ -236,6 +236,10 @@ startBtn.onclick = function() {
     statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
     return;
   }
+   // --- LIRE et AFFICHER l’intro AVANT de masquer le bloc principal ---
+  speak(introTexte);
+  // attendre la fin de la lecture (7 secondes)
+  setTimeout(() => {
   codePerso = code;
   mainDiv.style.display = "none";
   questionnaireDiv.style.display = "block";
@@ -244,9 +248,6 @@ startBtn.onclick = function() {
   isPaused = false;
   resumeBtn.style.display = "none";
   pauseBtn.style.display = "inline";
-  // --- Lecture à voix haute de l’intro puis 1ère question après 7 secondes
-  speak(introTexte);
-  setTimeout(() => {
     askQuestion(current);
   }, 7000);
 };
