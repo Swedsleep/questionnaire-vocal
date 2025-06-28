@@ -168,11 +168,12 @@
   }
   questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
   responseEl.textContent = "";
-  nextBtn.style.display = "none";
+  nextBtn.style.display = "none"; //on masque les boutons manuel
   // Lecture à voix haute PUIS micro (reconnaissance vocale)
   const utter = new SpeechSynthesisUtterance(questions[idx].text);
   utter.lang = "fr-FR";
   utter.onend = function() {
+    // Quand la lecture est finie on demarre le micro sans action
     if (questionnaireDiv.style.display === "block" && !isPaused) {
       startRecognition();
     }
@@ -197,7 +198,7 @@
     const transcript = event.results[0][0].transcript.trim().toLowerCase();
     responseEl.textContent = transcript;
 
-    // Analyse si la personne veut juste passer
+    // Analyse si la personne ditt "suivant","question suivante" ou reste silencieuse 
     if (
       transcript.includes("suivant") ||
       transcript.includes("question suivante") ||
