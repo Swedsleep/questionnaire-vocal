@@ -206,11 +206,7 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
     }
   };
   window.speechSynthesis.speak(utter);
-}
-    if(!isPaused) startRecognition();
-  };
-  window.speechSynthesis.speak(utter);
-}
+
 
     function showSummary() {
       questionnaireDiv.style.display = "none";
@@ -247,7 +243,7 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
     pauseBtn.style.display = "inline";
     askQuestion(current);
   };
-  // --- window.speechSynthesis.speak(utter);
+  window.speechSynthesis.speak(utter);
 };
 
     speakBtn.onclick = function() { startRecognition(); };
