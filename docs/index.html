@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Questionnaire DSM-5 (Vocal)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fafaff; color: #222; max-width: 750px; margin: auto; padding: 1.5rem; }
+    h1 { color: #0070f3; }
+    #main, #questionnaire, #summary { margin-top: 2rem; }
+    #questionnaire { background: #fff; border-radius: 1.3rem; box-shadow: 0 3px 20px #0002; padding: 2rem; }
+    #introText { margin-bottom: 1rem; font-size: 1.08rem; color: #555; }
+    #status { color: #d20; margin: .6rem 0; }
+    button { margin: 0.3rem 0.7rem 0.3rem 0; padding: .5rem 1.3rem; border-radius: 1rem; border: none; background: #0070f3; color: #fff; font-size: 1rem; cursor: pointer; }
+    button[disabled] { opacity: 0.5; }
+    #response { font-style: italic; color: #075; margin: 0.7rem 0; }
+    #answersList { margin: 1.2rem 0; }
+    .hidden { display: none; }
+    #pauseBtn, #resumeBtn { background: #f8b400; color: #222; }
+    #copyBtn, #pdfBtn { background: #111a; }
+    #commentGlobal { width: 99%; min-height: 50px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <h1>Questionnaire DSM-5 (Vocal)</h1>
+    <div id="status"></div>
+    <div id="intro">
+      <p id="introText">
+        Je vais vous poser plusieurs questions se rapportant à ces dernières semaines.<br>
+        Commencez par entrer un code de 4 chiffres de votre choix.<br>
+        Ces questions sont groupées en 23 sections ; prenez votre temps et répondez calmement,<br>
+        vous pouvez aussi commenter. 
+      </p>
+      <p>
+        <label for="codeInput"><b>Entrez un code de 4 chiffres (au choix) :</b></label><br>
+        <input type="text" id="codeInput" maxlength="4" pattern="[0-9]{4}" autocomplete="off" />
+      </p>
+      <button id="startBtn">Commencer</button>
+    </div>
+  </div>
 
+  <div id="questionnaire" class="hidden">
+    <div id="partLabel" style="font-weight:bold;margin-bottom:1rem;"></div>
+    <p id="question"></p>
+    <button id="speakBtn">Répondre à voix haute</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="resumeBtn" class="hidden">Reprendre</button>
+    <p id="response"></p>
+    <button id="nextBtn" style="display:none;">Question suivante</button>
+  </div>
+
+  <div id="summary" class="hidden">
+    <h2>Merci !</h2>
+    <div>Votre code anonyme : <b id="codeDisplay"></b></div>
+    <p>Voici vos réponses :</p>
+    <ul id="answersList"></ul>
+    <textarea id="commentGlobal" placeholder="Commentaire global (facultatif)"></textarea><br>
+    <button id="copyBtn">Copier les réponses</button>
+    <button id="pdfBtn">Enregistrer en PDF</button>
+  </div>
+
+  <script>
+    // --- Questions (exemple, remplace par toutes tes vraies questions) ---
+    const questions = [
+      { section: 1, text: "Ressentez-vous de l'anxiété ou une tension excessive ?" },
+      { section: 2, text: "Avez-vous du mal à contrôler vos inquiétudes ?" },
+      { section: 3, text: "Avez-vous des troubles du sommeil ?" },
+      { section: 4, text: "Votre humeur est-elle souvent dépressive ?" }
+      // ... (mets ici toutes les autres questions !)
+    ];
+    // Mets ici toutes tes vraies questions extraites du DSM-5 (il y en a environ 53, selon ton doc).
+
+    // --- Variables ---
+    let responses = [];
+    let current = 0;
+    let codePerso = "";
+    let isPaused = false;
+    const synth = window.speechSynthesis;
+    const questionEl = document.getElementById("question");
+    const responseEl = document.getElementById("response");
+    const startBtn = document.getElementById("startBtn");
+    const questionnaireDiv = document.getElementById("questionnaire");
+    const summaryDiv = document.getElementById("summary");
+    const mainDiv = document.getElementById("main");
+    const codeInput = document.getElementById("codeInput");
+    const statusDiv = document.getElementById("status");
+    const nextBtn = document.getElementById("nextBtn");
+    const speakBtn = document.getElementById("speakBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resumeBtn = document.getElementById("resumeBtn");
+    const partLabel = document.getElementById("partLabel");
+    const answersList = document.getElementById("answersList");
+    const codeDisplay = document.getElementById("codeDisplay");
+    const copyBtn = document.getElementById("copyBtn");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const commentGlobal = document.getElementById("commentGlobal");
+
+    // --- (optionnel) Titres de section si besoin ---
+    const partTitles = [
+      "Sections 1-10 : Symptômes principaux",
+      "Sections 11-23 : Aspects complémentaires"
+    ];
+    const partBreaks = [10]; // exemple, mets ici le numéro de question où changer de titre
+
+    function speak(text, lang="fr-FR") {
+      if (synth.speaking) synth.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      synth.speak(utter);
+    }
+
+    // Reconnaissance vocale avec commandes "suivant", "pause", "reprendre"
+    function startRecognition(extraCommands = true) {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = "fr-FR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+      responseEl.textContent = "Écoute en cours...";
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim().toLowerCase();
+        if(extraCommands) {
+          if(transcript.includes("suivant")) { nextBtn.click(); return; }
+          if(transcript.includes("pause")) { pauseBtn.click(); return; }
+          if(transcript.includes("reprend")) { resumeBtn.click(); return; }
+        }
+        responseEl.textContent = transcript;
+        responses[current] = transcript;
+        nextBtn.style.display = "inline";
+      };
+      recognition.onerror = function(event) {
+        responseEl.textContent = "Erreur : " + event.error;
+      };
+    }
+
+    function showSummary() {
+      questionnaireDiv.classList.add("hidden");
+      summaryDiv.classList.remove("hidden");
+      codeDisplay.textContent = codePerso;
+      answersList.innerHTML = "";
+      questions.forEach((q, i) => {
+        const li = document.createElement("li");
+        li.textContent = `Section ${q.section} — ${q.text} — ${responses[i] || ""}`;
+        answersList.appendChild(li);
+      });
+      window.scrollTo(0,0);
+      speak("Questionnaire terminé. Merci pour vos réponses.");
+    }
+
+    // --- Gestion boutons & événements
+    startBtn.onclick = function() {
+      const code = codeInput.value.trim();
+      if (!/^\d{4}$/.test(code)) {
+        statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
+        return;
+      }
+      // LIRE l’intro à voix haute, puis enchaîner
+      const utter = new SpeechSynthesisUtterance(document.getElementById("introText").textContent);
+      utter.lang = "fr-FR";
+      utter.onend = function() {
+        codePerso = code;
+        mainDiv.classList.add("hidden");
+        questionnaireDiv.classList.remove("hidden");
+        current = 0;
+        responses = [];
+        isPaused = false;
+        resumeBtn.classList.add("hidden");
+        pauseBtn.classList.remove("hidden");
+        askQuestion(current);
+      };
+      window.speechSynthesis.speak(utter);
+    };
+
+    function askQuestion(idx) {
+      if (idx === 0) {
+        partLabel.textContent = partTitles[0];
+      } else if (partBreaks.includes(idx)) {
+        partLabel.textContent = partTitles[1];
+      }
+      questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+      responseEl.textContent = "";
+      nextBtn.style.display = "none";
+      // Lecture de la question à voix haute, PUIS micro
+      const utter = new SpeechSynthesisUtterance(questions[idx].text);
+      utter.lang = "fr-FR";
+      utter.onend = function() {
+        if (questionnaireDiv.style.display !== "none" && !isPaused) {
+          startRecognition();
+        }
+      };
+      window.speechSynthesis.speak(utter);
+    }
+
+    speakBtn.onclick = function() { startRecognition(); };
+    nextBtn.onclick = function() {
+      current++;
+      if (current < questions.length) {
+        askQuestion(current);
+      } else {
+        showSummary();
+      }
+    };
+    pauseBtn.onclick = function() {
+      isPaused = true;
+      questionnaireDiv.style.opacity = 0.3;
+      pauseBtn.classList.add("hidden");
+      resumeBtn.classList.remove("hidden");
+      speak("Pause activée.");
+    };
+    resumeBtn.onclick = function() {
+      isPaused = false;
+      questionnaireDiv.style.opacity = 1;
+      pauseBtn.classList.remove("hidden");
+      resumeBtn.classList.add("hidden");
+      speak("Reprise du questionnaire.");
+    };
+    copyBtn.onclick = function() {
+      const txt = "Code : " + codePerso + "\n"
+        + questions.map((q, i) => "Section " + q.section + " — " + q.text + " : " + (responses[i] || "")).join("\n")
+        + "\nCommentaire global : " + commentGlobal.value;
+      navigator.clipboard.writeText(txt);
+      alert("Réponses copiées !");
+    };
+    pdfBtn.onclick = function() {
+      window.print();
+    };
+    // Commande clavier ("Entrée" pour question suivante)
+    document.addEventListener("keydown", function(e){
+      if (questionnaireDiv.style.display !== "none" && !isPaused && e.key === "Enter" && nextBtn.style.display !== "none") {
+        nextBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
