@@ -161,15 +161,15 @@
 
     function askQuestion(idx) {
       // Afficher le titre de la partie selon le numéro de la question
-      if (idx === 0) {
-        partLabel.textContent = partTitles[0];
-      } else if (partBreaks.includes(idx)) {
-        partLabel.textContent = partTitles[1];
-      }
-      questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
-      responseEl.textContent = "";
-      nextBtn.style.display = "none";
-// Lecture à voix haute PUIS reconnaissance vocale
+    if (idx === 0) {
+    partLabel.textContent = partTitles[0];
+  } else if (partBreaks.includes(idx)) {
+    partLabel.textContent = partTitles[1];
+  }
+  questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+  responseEl.textContent = "";
+  nextBtn.style.display = "none";
+  // Lecture à voix haute PUIS micro (reconnaissance vocale)
   const utter = new SpeechSynthesisUtterance(questions[idx].text);
   utter.lang = "fr-FR";
   utter.onend = function() {
@@ -177,33 +177,38 @@
       startRecognition();
     }
   };
- window.speechSynthesis.speak(utter);
-}
+  window.speechSynthesis.speak(utter);
+}    
    
     function startRecognition() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
-        return;
-      }
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = "fr-FR";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "fr-FR";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-      recognition.start();
-      responseEl.textContent = "Écoute en cours...";
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim();
-        if(extraCommands) {
-      if(transcript.includes("pause")) { pauseBtn.click(); return; }
-      if(transcript.includes("reprend")) { resumeBtn.click(); return; }
-      // Tu peux garder la commande "suivant" SI tu veux la sécurité
-      // if(transcript.includes("suivant")) { nextBtn.click(); return; }
-    }
+  recognition.start();
+  responseEl.textContent = "Écoute en cours...";
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript.trim().toLowerCase();
     responseEl.textContent = transcript;
-    responses[current] = transcript;
-    // Passage automatique à la question suivante :
+
+    // Analyse si la personne veut juste passer
+    if (
+      transcript.includes("suivant") ||
+      transcript.includes("question suivante") ||
+      transcript.includes("passer") ||
+      transcript === "" // silence = on saute
+    ) {
+      responses[current] = ""; // réponse vide = question sautée
+    } else {
+      responses[current] = transcript;
+    }
+    // Passage à la question suivante automatiquement
     setTimeout(() => {
       current++;
       if (current < questions.length) {
@@ -211,12 +216,13 @@
       } else {
         showSummary();
       }
-    }, 900); // 0.9 seconde pour laisser le temps de lire l'écran
+    }, 700); // court délai pour lisibilité
+
   };
   recognition.onerror = function(event) {
     responseEl.textContent = "Erreur : " + event.error;
   };
-}
+} 
 
     startBtn.onclick = function() {
       const code = codeInput.value.trim();
