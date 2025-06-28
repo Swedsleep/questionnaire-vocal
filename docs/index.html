@@ -204,7 +204,45 @@ function speak(txt) {
   window.speechSynthesis.speak(utter);
 }
 
-function askQuestion(idx) {
+ function askQuestion(idx) {
+  // Afficher le titre de la partie selon le numéro de la question
+  if (idx === 0) {
+    partLabel.textContent = partTitles[0];
+  } else if (partBreaks.includes(idx)) {
+    partLabel.textContent = partTitles[1];
+  }
+
+  // Affichage conditionnel de "Section X :"
+  if (questions[idx].section !== undefined) {
+    questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+  } else {
+    questionEl.textContent = questions[idx].text;
+  }
+
+  responseEl.textContent = "";
+  nextBtn.style.display = "none"; // on masque les boutons manuels
+
+  // Lecture à voix haute PUIS micro (reconnaissance vocale)
+  const utter = new SpeechSynthesisUtterance(questions[idx].text);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    if (questionnaireDiv.style.display === "block" && !isPaused) {
+      startRecognition();
+    }
+  };
+  window.speechSynthesis.speak(utter);
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   // Afficher le titre de la partie selon le numéro de la question
   if (idx === 0) {
     partLabel.textContent = partTitles[0];
