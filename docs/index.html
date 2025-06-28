@@ -2,131 +2,45 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Questionnaire DSM-5 Vocal</title>
+  <title>Questionnaire vocal interactif</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 2em; }
-    #main, #questionnaire, #summary { background: #fff; padding: 2em; border-radius: 1em; box-shadow: 0 2px 10px #0001; max-width: 700px; margin: 2em auto; }
-    button { margin: 1em 0.5em; padding: 0.7em 2em; border-radius: 1em; border: none; background: #0056cc; color: #fff; font-size: 1.1em; cursor: pointer; }
-    button:disabled { background: #bbb; }
-    #status { color: #b00; font-weight: bold; margin-bottom: 1em; }
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+    #questionnaire, #summary { background: #fff; padding: 2em; border-radius: 1em; box-shadow: 0 2px 10px #0001; max-width: 500px; margin: auto; }
+    button { margin: 1em 0.2em; padding: 0.7em 1.5em; border-radius: 1em; border: none; background: #0056cc; color: #fff; font-size: 1.1em; cursor: pointer; }
+    button:disabled { background: #aaa; }
     h1, h2 { color: #0056cc; }
-    .section-number { color: #006699; font-weight: bold; font-size: 1.1em; }
-    #pauseBtn, #resumeBtn { background: #F39C12; color: #fff; }
-    #resumeBtn { background: #28B463; }
-    #commentGlobal { width: 98%; height: 80px; margin-top: 1em; font-size: 1em; border-radius: 0.7em; border: 1px solid #ccc; padding: 0.5em;}
-    #answersList { text-align: left; margin: 1em 0 2em 0; }
-    #codeInput { font-size: 1.2em; width: 6em; text-align: center; letter-spacing: 0.4em; }
+    #status { color: #b00; font-weight: bold; margin-bottom: 1em; }
+    #answersList { text-align: left; }
   </style>
 </head>
 <body>
-  <div id="main">
-    <h1>Questionnaire DSM-5 (Vocal)</h1>
-    <div id="status"></div>
-    <div id="intro">
-      <p id="introText"></p>
-      <p>
-        <label for="codeInput"><b>Entrez un code de 4 chiffres (au choix) :</b></label><br>
-        <input type="text" id="codeInput" maxlength="4" pattern="[0-9]{4}" autocomplete="off" />
-      </p>
-      <button id="startBtn">Commencer</button>
-    </div>
-  </div>
-
+  <h1>Questionnaire DSM-5 (Vocal)</h1>
+  <div id="status"></div>
+  <button id="startBtn">Commencer</button>
   <div id="questionnaire" style="display:none;">
-    <div class="section-number" id="sectionNumber"></div>
     <p id="question"></p>
     <button id="speakBtn">Répondre à voix haute</button>
     <p id="response"></p>
     <button id="nextBtn" style="display:none;">Question suivante</button>
-    <button id="pauseBtn" style="float:right;">Pause</button>
-    <button id="resumeBtn" style="float:right; display:none;">Reprendre</button>
   </div>
-
   <div id="summary" style="display:none;">
-    <h2>Merci !</h2>
-    <p>Votre code personnel : <span id="codeDisplay"></span></p>
-    <p>Voici vos réponses :</p>
+    <h2>Merci !</h2>
+    <p>Voici vos réponses :</p>
     <ul id="answersList"></ul>
-    <label for="commentGlobal"><b>Commentaire global :</b></label>
-    <br>
-    <textarea id="commentGlobal" placeholder="Vous pouvez écrire un commentaire ici…"></textarea>
-    <br>
     <button id="copyBtn">Copier les réponses</button>
   </div>
-
   <script>
-    // INTRO
-    const introTexte = `Je vais vous poser plusieurs questions se rapportant à ces dernières semaines.
-Commencez par entrer un code de 4 chiffres que vous choisirez à votre guise.
-Ces questions sont groupées en 23 sections ; prenez votre temps et répondez calmement, vous pouvez aussi commenter à la fin.
-Pour passer à la question suivante, dites “suivant” à voix haute ou appuyez sur la touche “Entrée” du clavier.
-Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause”.`;
-
-    document.getElementById("introText").textContent = introTexte;
-
-    // ------------------------
-    // LES QUESTIONS DU DSM-5
-    // ------------------------
-    // Chaque entrée: { section: X, text: "..." }
+    // --- Personnalise ici tes questions ---
     const questions = [
-{section:1, text:"Avez-vous eu beaucoup de difficultés à vous concentrer sur ce que vous faisiez ?"},
-{section:1, text:"Avez-vous eu des difficultés à vous souvenir de choses importantes ou récentes ?"},
-{section:1, text:"Avez-vous eu des moments où vos pensées étaient confuses ou désorganisées ?"},
-{section:2, text:"Avez-vous eu des difficultés à rester calme ou à vous détendre ?"},
-{section:2, text:"Avez-vous ressenti une agitation intérieure ou de l’impatience ?"},
-{section:2, text:"Avez-vous ressenti une tension musculaire, des crispations ou des douleurs physiques liées au stress ?"},
-{section:3, text:"Avez-vous ressenti un état de nervosité ou d’inquiétude presque permanent ?"},
-{section:3, text:"Avez-vous eu du mal à contrôler vos inquiétudes ?"},
-{section:4, text:"Avez-vous eu des difficultés à vous endormir ou à rester endormi ?"},
-{section:4, text:"Vous êtes-vous réveillé trop tôt le matin sans parvenir à vous rendormir ?"},
-{section:4, text:"Avez-vous fait des cauchemars ou eu un sommeil agité ?"},
-{section:5, text:"Avez-vous ressenti une fatigue inhabituelle ou un manque d’énergie ?"},
-{section:5, text:"Avez-vous eu du mal à terminer vos tâches par manque d’énergie ?"},
-{section:6, text:"Avez-vous ressenti une tristesse persistante ou un abattement ?"},
-{section:6, text:"Avez-vous perdu de l’intérêt ou du plaisir pour des activités que vous aimiez auparavant ?"},
-{section:6, text:"Avez-vous eu l’impression que rien ne vous faisait plaisir ?"},
-{section:7, text:"Avez-vous eu des idées noires, des pensées de mort ou de suicide ?"},
-{section:7, text:"Avez-vous eu l’impression que la vie ne valait pas la peine d’être vécue ?"},
-{section:8, text:"Avez-vous eu du mal à prendre des décisions, même pour des choses simples ?"},
-{section:8, text:"Avez-vous eu l’impression d’être indécis ou de douter de tout ?"},
-{section:9, text:"Avez-vous ressenti une peur intense sans raison apparente ?"},
-{section:9, text:"Avez-vous eu des crises de panique avec palpitations, sueurs ou sensation d’étouffement ?"},
-{section:9, text:"Avez-vous évité certains lieux ou situations par peur qu’il vous arrive quelque chose ?"},
-{section:10, text:"Avez-vous eu l’impression que des souvenirs difficiles revenaient sans prévenir ?"},
-{section:10, text:"Avez-vous fait des cauchemars liés à des événements passés ?"},
-{section:10, text:"Avez-vous eu des flashbacks ou revécu mentalement des situations douloureuses ?"},
-{section:11, text:"Avez-vous eu du mal à contrôler vos comportements (ex : achats, nourriture, jeux, alcool, drogues, sexe, etc.) ?"},
-{section:11, text:"Avez-vous eu des comportements impulsifs ou des difficultés à vous retenir ?"},
-{section:12, text:"Avez-vous eu l’impression d’entendre des voix ou de voir des choses que les autres ne percevaient pas ?"},
-{section:12, text:"Avez-vous eu des croyances bizarres, irrationnelles ou des idées de persécution ?"},
-{section:13, text:"Avez-vous ressenti des obsessions (pensées intrusives répétitives, qui vous dérangent) ?"},
-{section:13, text:"Avez-vous ressenti le besoin de faire certains gestes ou rituels pour vous rassurer ?"},
-{section:14, text:"Avez-vous eu l’impression d’être différent ou détaché de votre propre corps ou de la réalité ?"},
-{section:14, text:"Avez-vous eu des épisodes de perte de mémoire ou d’amnésie inexpliquée ?"},
-{section:15, text:"Avez-vous eu des difficultés à contrôler votre colère ou des accès de rage ?"},
-{section:15, text:"Avez-vous eu des réactions excessives face à des contrariétés mineures ?"},
-{section:16, text:"Avez-vous eu des comportements répétitifs sans raison apparente (se ronger les ongles, se gratter, etc.) ?"},
-{section:16, text:"Avez-vous eu des tics moteurs ou des mouvements involontaires ?"},
-{section:17, text:"Avez-vous eu des troubles de l’alimentation (perte d’appétit, boulimie, crises de compulsion alimentaire, etc.) ?"},
-{section:17, text:"Avez-vous eu des préoccupations excessives concernant votre poids ou votre image corporelle ?"},
-{section:18, text:"Avez-vous consommé de l’alcool de manière excessive ou hors de votre contrôle ?"},
-{section:18, text:"Avez-vous eu des difficultés à diminuer ou arrêter la consommation d’alcool ?"},
-{section:19, text:"Avez-vous consommé des substances (drogues, médicaments, etc.) de façon abusive ou non prescrite ?"},
-{section:19, text:"Avez-vous eu du mal à arrêter ou à réduire ces consommations ?"},
-{section:20, text:"Avez-vous eu des difficultés à gérer votre temps ou votre organisation au quotidien ?"},
-{section:20, text:"Avez-vous eu des oublis répétés, des retards ou des problèmes d’attention au travail ou à la maison ?"},
-{section:21, text:"Avez-vous eu des difficultés à interagir avec les autres (timidité excessive, évitement, méfiance, etc.) ?"},
-{section:21, text:"Avez-vous eu du mal à vous faire des amis ou à maintenir des relations ?"},
-{section:22, text:"Avez-vous ressenti une gêne dans des situations sociales (prise de parole, repas en public, etc.) ?"},
-{section:22, text:"Avez-vous évité des situations par peur d’être jugé ou embarrassé ?"},
-{section:23, text:"Avez-vous eu d’autres symptômes, difficultés ou préoccupations psychologiques dont vous aimeriez parler ?"}
+      "Ressentez-vous de l'anxiété ou une tension excessive ?",
+      "Avez-vous du mal à contrôler vos inquiétudes ?",
+      "Avez-vous des troubles du sommeil ?",
+      "Votre humeur est-elle souvent dépressive ?"
+      // Ajoute ici d'autres questions DSM-5 si tu veux !
     ];
 
-    // --- Fonctionnalités JS
     let responses = [];
     let current = 0;
-    let isPaused = false;
-    let codePerso = "";
 
     const synth = window.speechSynthesis;
     const questionEl = document.getElementById("question");
@@ -139,26 +53,20 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
     const copyBtn = document.getElementById("copyBtn");
     const statusDiv = document.getElementById("status");
     const speakBtn = document.getElementById("speakBtn");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const resumeBtn = document.getElementById("resumeBtn");
-    const codeInput = document.getElementById("codeInput");
-    const codeDisplay = document.getElementById("codeDisplay");
-    const sectionNumber = document.getElementById("sectionNumber");
-    const mainDiv = document.getElementById("main");
-    const introDiv = document.getElementById("intro");
-    const commentGlobal = document.getElementById("commentGlobal");
 
-    function speak(text, lang="fr-FR") {
-      if (synth.speaking) synth.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = lang;
+    function askQuestion(idx) {
+      questionEl.textContent = questions[idx];
+      responseEl.textContent = "";
+      nextBtn.style.display = "none";
+      // Synthèse vocale (parle la question)
+      const utter = new SpeechSynthesisUtterance(questions[idx]);
+      utter.lang = "fr-FR";
       synth.speak(utter);
     }
 
-    // Ajout commande vocale "suivant", "pause", "reprendre"
-    function startRecognition(extraCommands = true) {
+    function startRecognition() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
+        statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilise Chrome ou Edge)";
         return;
       }
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -170,12 +78,7 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
       recognition.start();
       responseEl.textContent = "Écoute en cours...";
       recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim().toLowerCase();
-        if(extraCommands) {
-          if(transcript.includes("suivant")) { nextBtn.click(); return; }
-          if(transcript.includes("pause")) { pauseBtn.click(); return; }
-          if(transcript.includes("reprend")) { resumeBtn.click(); return; }
-        }
+        const transcript = event.results[0][0].transcript;
         responseEl.textContent = transcript;
         responses[current] = transcript;
         nextBtn.style.display = "inline";
@@ -185,107 +88,38 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
       };
     }
 
-
-    function showSummary() {
-      questionnaireDiv.style.display = "none";
-      summaryDiv.style.display = "block";
-      codeDisplay.textContent = codePerso;
-      answersList.innerHTML = "";
-      questions.forEach((q, i) => {
-        const li = document.createElement("li");
-        li.textContent = `Section ${q.section} — ${q.text} — ${responses[i] || ""}`;
-        answersList.appendChild(li);
-      });
-      window.scrollTo(0,0);
-      speak("Questionnaire terminé. Merci pour vos réponses.");
-    }
-
-    // --- Gestion boutons & événements
     startBtn.onclick = function() {
-  const code = codeInput.value.trim();
-  if (!/^\d{4}$/.test(code)) {
-    statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
-    return;
-  }
-  // LIRE l’intro à voix haute
-  const utter = new SpeechSynthesisUtterance(introTexte);
-  utter.lang = "fr-FR";
-  utter.onend = function() {
-    codePerso = code;
-    mainDiv.style.display = "none";
-    questionnaireDiv.style.display = "block";
-    current = 0;
-    responses = [];
-    isPaused = false;
-    resumeBtn.style.display = "none";
-    pauseBtn.style.display = "inline";
-    askQuestion(current);
-  };
-  window.speechSynthesis.speak(utter);
-};
-   
-  function askQuestion(idx) {
-       // Afficher le titre de la partie selon le numéro de la question
-  if (idx === 0) {
-    partLabel.textContent = partTitles[0];
-  } else if (partBreaks.includes(idx)) {
-    partLabel.textContent = partTitles[1];
-  }
-  questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
-  responseEl.textContent = "";
-  nextBtn.style.display = "none";
-  // Lecture de la question à voix haute, PUIS micro (reconnaissance vocale)
-  const utter = new SpeechSynthesisUtterance(questions[idx].text);
-  utter.lang = "fr-FR";
-  utter.onend = function() {
-    if (questionnaireDiv.style.display === "block" && !isPaused) {
-      startRecognition();
-    }
-  };
-  window.speechSynthesis.speak(utter);
-}
+      startBtn.style.display = "none";
+      questionnaireDiv.style.display = "block";
+      askQuestion(current);
+    };
 
-    speakBtn.onclick = function() { startRecognition(); };
+    speakBtn.onclick = function() {
+      startRecognition();
+    };
+
     nextBtn.onclick = function() {
       current++;
       if (current < questions.length) {
         askQuestion(current);
       } else {
-        showSummary();
+        questionnaireDiv.style.display = "none";
+        summaryDiv.style.display = "block";
+        // Affiche la liste des réponses
+        answersList.innerHTML = "";
+        questions.forEach((q, i) => {
+          const li = document.createElement("li");
+          li.textContent = q + " — " + (responses[i] || "");
+          answersList.appendChild(li);
+        });
       }
-    };
-
-    pauseBtn.onclick = function() {
-      isPaused = true;
-      questionnaireDiv.style.opacity = 0.3;
-      pauseBtn.style.display = "none";
-      resumeBtn.style.display = "inline";
-      speak("Pause activée.");
-    };
-    resumeBtn.onclick = function() {
-      isPaused = false;
-      questionnaireDiv.style.opacity = 1;
-      pauseBtn.style.display = "inline";
-      resumeBtn.style.display = "none";
-      speak("Reprise du questionnaire.");
     };
 
     copyBtn.onclick = function() {
-      const txt = "Code : " + codePerso + "\n"
-        + questions.map((q, i) => "Section " + q.section + " — " + q.text + " : " + (responses[i] || "")).join("\n")
-        + "\nCommentaire global : " + commentGlobal.value;
+      const txt = questions.map((q, i) => q + " : " + (responses[i] || "")).join("\n");
       navigator.clipboard.writeText(txt);
-      alert("Réponses copiées !");
+      alert("Réponses copiées !");
     };
-
-    // --- Commandes clavier ("Entrée" pour question suivante)
-    document.addEventListener("keydown", function(e){
-      if (questionnaireDiv.style.display === "block" && !isPaused && e.key === "Enter" && nextBtn.style.display !== "none") {
-        nextBtn.click();
-      }
-    });
-
   </script>
 </body>
 </html>
-
