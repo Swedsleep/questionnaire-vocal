@@ -185,28 +185,6 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
       };
     }
 
-    function askQuestion(idx) {
-      // Afficher le titre de la partie selon le numéro de la question
-  if (idx === 0) {
-    partLabel.textContent = partTitles[0];
-  } else if (partBreaks.includes(idx)) {
-    partLabel.textContent = partTitles[1];
-  }
-  questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
-  responseEl.textContent = "";
-  nextBtn.style.display = "none";
-
-  // Synthèse vocale PUIS reconnaissance vocale automatique
-  const utter = new SpeechSynthesisUtterance(questions[idx].text);
-  utter.lang = "fr-FR";
-  utter.onend = function() {
-     // Lancer la reconnaissance vocale UNIQUEMENT si le questionnaire est affiché
-    if (questionnaireDiv.style.display === "block" && !isPaused) {
-      startRecognition();
-    }
-  };
-  window.speechSynthesis.speak(utter);
-
 
     function showSummary() {
       questionnaireDiv.style.display = "none";
@@ -245,6 +223,27 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
   };
   window.speechSynthesis.speak(utter);
 };
+   
+  function askQuestion(idx) {
+       // Afficher le titre de la partie selon le numéro de la question
+  if (idx === 0) {
+    partLabel.textContent = partTitles[0];
+  } else if (partBreaks.includes(idx)) {
+    partLabel.textContent = partTitles[1];
+  }
+  questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+  responseEl.textContent = "";
+  nextBtn.style.display = "none";
+  // Lecture de la question à voix haute, PUIS micro (reconnaissance vocale)
+  const utter = new SpeechSynthesisUtterance(questions[idx].text);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    if (questionnaireDiv.style.display === "block" && !isPaused) {
+      startRecognition();
+    }
+  };
+  window.speechSynthesis.speak(utter);
+}
 
     speakBtn.onclick = function() { startRecognition(); };
     nextBtn.onclick = function() {
