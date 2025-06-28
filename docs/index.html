@@ -186,14 +186,24 @@ Vous pouvez mettre en pause à tout moment avec le bouton ou en disant “pause�
     }
 
     function askQuestion(idx) {
-      if (idx >= questions.length) { showSummary(); return; }
-      questionEl.textContent = questions[idx].text;
-      sectionNumber.textContent = "Section " + questions[idx].section;
-      responseEl.textContent = "";
-      nextBtn.style.display = "none";
-      if (synth.speaking) synth.cancel();
-      speak("Section " + questions[idx].section + ". " + questions[idx].text);
-    }
+      // Afficher le titre de la partie selon le numéro de la question
+  if (idx === 0) {
+    partLabel.textContent = partTitles[0];
+  } else if (partBreaks.includes(idx)) {
+    partLabel.textContent = partTitles[1];
+  }
+  questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+  responseEl.textContent = "";
+  nextBtn.style.display = "none";
+
+  // Synthèse vocale PUIS reconnaissance vocale automatique
+  const utter = new SpeechSynthesisUtterance(questions[idx].text);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    if(!isPaused) startRecognition();
+  };
+  window.speechSynthesis.speak(utter);
+}
 
     function showSummary() {
       questionnaireDiv.style.display = "none";
