@@ -236,10 +236,11 @@ startBtn.onclick = function() {
     statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
     return;
   }
-   // --- LIRE et AFFICHER l’intro AVANT de masquer le bloc principal ---
-  speak(introTexte);
-  // attendre la fin de la lecture (7 secondes)
-  setTimeout(() => {
+    // Lecture de l’intro, attente fin voix
+  const utter = new SpeechSynthesisUtterance(introTexte);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    // Quand la voix a fini, on lance la suite !
   codePerso = code;
   mainDiv.style.display = "none";
   questionnaireDiv.style.display = "block";
@@ -249,7 +250,8 @@ startBtn.onclick = function() {
   resumeBtn.style.display = "none";
   pauseBtn.style.display = "inline";
     askQuestion(current);
-  }, 16000);
+};
+   window.speechSynthesis.speak(utter);
 };
     speakBtn.onclick = function() { startRecognition(); };
     nextBtn.onclick = function() {
