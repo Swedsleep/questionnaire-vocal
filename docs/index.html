@@ -216,9 +216,7 @@ function speak(txt) {
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(txt);
   utter.lang = "fr-FR";
-// On attend que les voix soient chargées, puis on choisit la française
-  const voices = window.speechSynthesis.getVoices();
-  const frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
+// On attend que les voix soient chargées, puis on choisit la française;
   if (frenchVoice) utter.voice = frenchVoice;
   window.speechSynthesis.speak(utter);
 }
