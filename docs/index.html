@@ -304,8 +304,148 @@ startBtn.onclick = function() {
     pauseBtn.style.display = "inline";
     askQuestion(current);
   };
+// --- DOM Elements ---
+const mainDiv = document.getElementById("main");
+const introText = document.getElementById("introText");
+const codeInput = document.getElementById("codeInput");
+const startBtn = document.getElementById("startBtn");
+const questionnaireDiv = document.getElementById("questionnaire");
+const partLabel = document.getElementById("partLabel");
+const questionEl = document.getElementById("question");
+const speakBtn = document.getElementById("speakBtn");
+const responseEl = document.getElementById("response");
+const nextBtn = document.getElementById("nextBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const resumeBtn = document.getElementById("resumeBtn");
+const summaryDiv = document.getElementById("summary");
+const answersList = document.getElementById("answersList");
+const copyBtn = document.getElementById("copyBtn");
+const pdfBtn = document.getElementById("pdfBtn");
+const statusDiv = document.getElementById("status");
+const commentGlobal = document.getElementById("globalComment");
 
-speakBtn.onclick = function() { if(!isPaused) startRecognition(); };
+introText.textContent = introTexte;
+// --- Initialisation voix française ---
+let frenchVoice = null;
+
+// Cette partie charge les voix et enregistre la voix FR si dispo
+window.speechSynthesis.onvoiceschanged = function() {
+  const voices = window.speechSynthesis.getVoices();
+  frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
+};
+
+// --- Fonction "speak" toujours en français ---
+function speak(txt) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(txt);
+  utter.lang = "fr-FR";
+// On attend que les voix soient chargées, puis on choisit la française;
+  if (frenchVoice) utter.voice = frenchVoice;
+  window.speechSynthesis.speak(utter);
+}
+// --- Affichage de la question ---
+ function askQuestion(idx) {
+  // Afficher le titre de la partie selon le numéro de la question
+if (typeof questions[idx].section === 'number') {
+    questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
+  } else {
+    questionEl.textContent = questions[idx].text;
+  }
+  responseEl.textContent = "";
+  nextBtn.style.display = "none";
+  const utter = new SpeechSynthesisUtterance(questions[idx].text);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    if (questionnaireDiv.style.display === "block" && !isPaused) {
+      startRecognition();
+    }
+  };
+  window.speechSynthesis.speak(utter);
+}
+ // --- Reconnaisance vocale --- 
+function startRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "fr-FR";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.start();
+  responseEl.textContent = "Écoute en cours...";
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript.trim().toLowerCase();
+    responseEl.textContent = transcript;
+
+    // Analyse si la personne dit "suivant", "question suivante", "passer" ou reste silencieuse
+    if (
+      transcript.includes("suivant") ||
+      transcript.includes("question suivante") ||
+      transcript.includes("passer") ||
+      transcript === "" // silence = on saute
+    ) {
+      responses[current] = ""; // réponse vide = question sautée
+    } else {
+      responses[current] = transcript;
+    }
+    // Passage à la question suivante automatiquement
+    setTimeout(() => {
+      current++;
+      if (current < questions.length) {
+        askQuestion(current);
+      } else {
+        showSummary();
+      }
+    }, 700); // court délai pour lisibilité
+
+  };
+  recognition.onerror = function(event) {
+    responseEl.textContent = "Erreur : " + event.error;
+  };
+}
+// --- Résumé des réponses ---
+function showSummary() {
+  questionnaireDiv.style.display = "none";
+  summaryDiv.style.display = "block";
+  answersList.innerHTML = "";
+  questions.forEach((q, i) => {
+    const li = document.createElement("li");
+    li.textContent = "Section " + q.section + " — " + q.text + " : " + (responses[i] || "");
+    answersList.appendChild(li);
+  });
+}
+// --- Gestionnaire des boutons (UN SEUL ENDROIT CHACUN) ---
+
+startBtn.onclick = function() {
+  const code = codeInput.value.trim();
+  if (!/^\d{4}$/.test(code)) {
+    statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(introTexte);
+  utter.lang = "fr-FR";
+  utter.onend = function() {
+    codePerso = code;
+    mainDiv.style.display = "none";
+    questionnaireDiv.style.display = "block";
+    current = 0;
+    responses = [];
+    isPaused = false;
+    resumeBtn.style.display = "none";
+    pauseBtn.style.display = "inline";
+    askQuestion(current);
+  };
+  window.speechSynthesis.speak(utter);
+};
+
+speakBtn.onclick = function() {
+  if (!isPaused) startRecognition();
+};
+
 nextBtn.onclick = function() {
   if (isPaused) return;
   current++;
@@ -323,6 +463,7 @@ pauseBtn.onclick = function() {
   resumeBtn.style.display = "inline";
   speak("Pause activée. Dites 'reprendre' pour continuer.");
 };
+
 resumeBtn.onclick = function() {
   isPaused = false;
   questionnaireDiv.style.opacity = 1;
@@ -331,6 +472,21 @@ resumeBtn.onclick = function() {
   speak("Reprise du questionnaire.");
 };
 
+copyBtn.onclick = function() {
+  const txt = "Code : " + codePerso + "\n"
+    + questions.map((q, i) => "Section " + q.section + " — " + q.text + " : " + (responses[i] || "")).join("\n")
+    + "\nCommentaire global : " + commentGlobal.value;
+  navigator.clipboard.writeText(txt);
+  alert("Réponses copiées !");
+};
+
+pdfBtn.onclick = function() {
+  window.print();
+};
+
+// (Si tu veux ajouter d’autres handlers, même logique !)
+
+// --- Event Enter pour "suivant" ---
 document.addEventListener("keydown", function(e){
   if (questionnaireDiv.style.display === "block" && !isPaused && e.key === "Enter" && nextBtn.style.display !== "none") {
     nextBtn.click();
