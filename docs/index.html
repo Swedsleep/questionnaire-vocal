@@ -359,28 +359,6 @@ document.addEventListener("keydown", function(e){
   }
 });
 
-function showSummary() {
-  questionnaireDiv.style.display = "none";
-  summaryDiv.style.display = "block";
-  answersList.innerHTML = "";
-  questions.forEach((q, i) => {
-    const li = document.createElement("li");
-    li.textContent = "Section " + q.section + " — " + q.text + " : " + (responses[i] || "");
-    answersList.appendChild(li);
-  });
-}
-
-copyBtn.onclick = function() {
-  const txt = "Code : " + codePerso + "\n"
-    + questions.map((q, i) => "Section " + q.section + " — " + q.text + " : " + (responses[i] || "")).join("\n")
-    + "\nCommentaire global : " + commentGlobal.value;
-  navigator.clipboard.writeText(txt);
-  alert("Réponses copiées !");
-};
-
-pdfBtn.onclick = function() {
-  window.print();
-};
   </script>
 </body>
 </html>
