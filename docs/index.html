@@ -201,12 +201,25 @@ const statusDiv = document.getElementById("status");
 const commentGlobal = document.getElementById("globalComment");
 
 introText.textContent = introTexte;
+// --- Initialisation voix française ---
+let frenchVoice = null;
 
+// Cette partie charge les voix et enregistre la voix FR si dispo
+window.speechSynthesis.onvoiceschanged = function() {
+  const voices = window.speechSynthesis.getVoices();
+  frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
+};
+
+// --- Fonction "speak" toujours en français ---
 function speak(txt) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(txt);
   utter.lang = "fr-FR";
+// On attend que les voix soient chargées, puis on choisit la française
+  const voices = window.speechSynthesis.getVoices();
+  const frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
+  if (frenchVoice) utter.voice = frenchVoice;
   window.speechSynthesis.speak(utter);
 }
 
@@ -293,8 +306,6 @@ startBtn.onclick = function() {
     pauseBtn.style.display = "inline";
     askQuestion(current);
   };
-  window.speechSynthesis.speak(utter);
-};
 
 speakBtn.onclick = function() { if(!isPaused) startRecognition(); };
 nextBtn.onclick = function() {
