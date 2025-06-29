@@ -57,12 +57,21 @@
   <script>
   
     // --- Introduction ---
-const introTexte = `Je vais vous poser plusieurs questions portant sur les dernières semaines. 
+
+  const introTexte = `Je vais vous poser plusieurs questions portant sur les dernières semaines. 
 Commencez par entrer un code de 4 chiffres que vous choisissez à votre guise. 
 Ces questions sont groupées en 23 sections : prenez votre temps, répondez calmement, 
 vous pouvez commenter et faire une pause. S'il y a erreur, pressez le bouton Repondre a Voix Haute. 
 À la fin, un commentaire global est possible et vous pourrez copier vos réponses 
 ou les enregistrer en PDF grâce aux boutons prévus à cet effet.`;  
+
+
+// --- Titres des parties et découpe ---
+const partTitles = ["Première partie : Symptômes principaux",
+"Deuxième partie : Questions additionnelles"
+];
+// La question 37 commence la 2e partie (ajuste selon tes sections si besoin)
+const partBreaks = [37];
 
 // --- QUESTIONS (~53, SECTIONS 1 À 23) ---
  const questions = [
@@ -193,30 +202,22 @@ const commentGlobal = document.getElementById("globalComment");
 
 introText.textContent = introTexte;
 
-// --- Initialisation voix française ---
-let frenchVoice = null;
-window.speechSynthesis.onvoiceschanged = function() {
-  const voices = window.speechSynthesis.getVoices();
-  frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
-};
-
-// --- Fonction "speak" toujours en français ---
 function speak(txt) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(txt);
   utter.lang = "fr-FR";
-  if (frenchVoice) utter.voice = frenchVoice;
   window.speechSynthesis.speak(utter);
 }
 
-// --- Affichage de la question ---
-function askQuestion(idx) {
-  if (typeof questions[idx].section === 'number') {
+ function askQuestion(idx) {
+  // Afficher le titre de la partie selon le numéro de la question
+if (typeof questions[idx].section === 'number') {
     questionEl.textContent = "Section " + questions[idx].section + " : " + questions[idx].text;
   } else {
     questionEl.textContent = questions[idx].text;
   }
+
   responseEl.textContent = "";
   nextBtn.style.display = "none";
   const utter = new SpeechSynthesisUtterance(questions[idx].text);
@@ -228,8 +229,7 @@ function askQuestion(idx) {
   };
   window.speechSynthesis.speak(utter);
 }
-
-// --- Reconnaisance vocale --- 
+  
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     statusDiv.textContent = "Reconnaissance vocale non supportée sur ce navigateur ! (utilisez Chrome ou Edge)";
@@ -274,20 +274,6 @@ function startRecognition() {
   };
 }
 
-// --- Résumé des réponses ---
-function showSummary() {
-  questionnaireDiv.style.display = "none";
-  summaryDiv.style.display = "block";
-  answersList.innerHTML = "";
-  questions.forEach((q, i) => {
-    const li = document.createElement("li");
-    li.textContent = "Section " + q.section + " — " + q.text + " : " + (responses[i] || "");
-    answersList.appendChild(li);
-  });
-}
-
-// --- Gestionnaire des boutons (UN SEUL ENDROIT CHACUN) ---
-
 startBtn.onclick = function() {
   const code = codeInput.value.trim();
   if (!/^\d{4}$/.test(code)) {
@@ -310,10 +296,7 @@ startBtn.onclick = function() {
   window.speechSynthesis.speak(utter);
 };
 
-speakBtn.onclick = function() {
-  if (!isPaused) startRecognition();
-};
-
+speakBtn.onclick = function() { if(!isPaused) startRecognition(); };
 nextBtn.onclick = function() {
   if (isPaused) return;
   current++;
@@ -331,7 +314,6 @@ pauseBtn.onclick = function() {
   resumeBtn.style.display = "inline";
   speak("Pause activée. Dites 'reprendre' pour continuer.");
 };
-
 resumeBtn.onclick = function() {
   isPaused = false;
   questionnaireDiv.style.opacity = 1;
@@ -339,6 +321,23 @@ resumeBtn.onclick = function() {
   resumeBtn.style.display = "none";
   speak("Reprise du questionnaire.");
 };
+
+document.addEventListener("keydown", function(e){
+  if (questionnaireDiv.style.display === "block" && !isPaused && e.key === "Enter" && nextBtn.style.display !== "none") {
+    nextBtn.click();
+  }
+});
+
+function showSummary() {
+  questionnaireDiv.style.display = "none";
+  summaryDiv.style.display = "block";
+  answersList.innerHTML = "";
+  questions.forEach((q, i) => {
+    const li = document.createElement("li");
+    li.textContent = "Section " + q.section + " — " + q.text + " : " + (responses[i] || "");
+    answersList.appendChild(li);
+  });
+}
 
 copyBtn.onclick = function() {
   const txt = "Code : " + codePerso + "\n"
@@ -351,14 +350,6 @@ copyBtn.onclick = function() {
 pdfBtn.onclick = function() {
   window.print();
 };
-
-// --- Event Enter pour "suivant" ---
-document.addEventListener("keydown", function(e){
-  if (questionnaireDiv.style.display === "block" && !isPaused && e.key === "Enter" && nextBtn.style.display !== "none") {
-    nextBtn.click();
-  }
-});
-
   </script>
 </body>
 </html>
