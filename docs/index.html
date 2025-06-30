@@ -283,6 +283,137 @@ ou les enregistrer en PDF grâce aux boutons prévus à cet effet.`;
     }
 
     // --- [Affiche une question à l'utilisateur, gère réponse manuelle ou vocale] ---
+function askQuestion(idx) {
+  // Affiche la section si c'est un début de section
+  if (typeof questions[idx].section === "number") {
+    partLabel.textContent = "Section " + questions[idx].section;
+  } else {
+    partLabel.textContent = "";
+  }
+  questionEl.innerHTML = questions[idx].text;
+
+  // Crée la zone de réponse
+  let responseZone = document.createElement("div");
+  responseZone.style.marginTop = "1.3em";
+
+  // Champ texte pour la réponse
+  let input = document.createElement("input");
+  input.type = "text";
+  input.id = "inputResponse";
+  input.style.padding = "0.5em";
+  input.style.width = "70%";
+  input.placeholder = "Répondez ici à la main ou utilisez le micro...";
+  responseZone.appendChild(input);
+
+  // Remet la dernière réponse si elle existe (correction)
+  if (responses[idx]) input.value = responses[idx];
+
+  // Bouton micro
+  let btnVocal = document.createElement("button");
+  btnVocal.textContent = "🎤 Répondre à voix haute";
+  btnVocal.style.marginLeft = "1em";
+  responseZone.appendChild(btnVocal);
+
+  // Bouton Valider
+  let btnValider = document.createElement("button");
+  btnValider.textContent = "Valider";
+  btnValider.style.marginLeft = "1em";
+  responseZone.appendChild(btnValider);
+
+  // Zone pour correction rapide après reco vocale
+  let correctionZone = document.createElement("div");
+  correctionZone.style.marginTop = "0.7em";
+  responseZone.appendChild(correctionZone);
+
+  // Supprime l'ancienne zone de réponse si elle existe
+  let oldZone = document.getElementById("zoneResponse");
+  if (oldZone) oldZone.remove();
+  responseZone.id = "zoneResponse";
+  questionEl.parentNode.appendChild(responseZone);
+
+  input.focus();
+
+  // Lecture vocale de la question, puis lance la reconnaissance vocale
+  speak(questions[idx].text, function() {
+    autoRecognition();
+  });
+
+  // --- [Reconnaissance vocale automatique, correction et auto-next] ---
+  function autoRecognition() {
+    btnVocal.disabled = true;
+    document.getElementById('micAlert').style.display = "none";
+    startRecognition(function(rep) {
+      btnVocal.disabled = false;
+      if (rep && rep.trim()) {
+        input.value = rep;
+        showCorrectionBtns(rep);
+      }
+    });
+  }
+
+  // --- [Affiche boutons de correction après reco vocale, auto-next si pas de correction] ---
+  function showCorrectionBtns(rep) {
+    correctionZone.innerHTML = '';
+    let btnOk = document.createElement("button");
+    btnOk.textContent = "C'est correct";
+    btnOk.style.background = "#2bca2b";
+    btnOk.style.marginRight = "1em";
+    let btnRetry = document.createElement("button");
+    btnRetry.textContent = "Corriger";
+    btnRetry.style.background = "#fb8c00";
+    correctionZone.appendChild(btnOk);
+    correctionZone.appendChild(btnRetry);
+
+    // --- [Auto passage à la question suivante après 3 secondes si aucune correction] ---
+    autoNextTimeout = setTimeout(function(){
+      if (input.value === rep) {
+        responses[idx] = input.value.trim();
+        nextQuestionOrSummary();
+      }
+    }, 3000);
+
+    btnOk.onclick = function() {
+      if (autoNextTimeout) clearTimeout(autoNextTimeout);
+      responses[idx] = input.value.trim();
+      nextQuestionOrSummary();
+    };
+    btnRetry.onclick = function() {
+      if (autoNextTimeout) clearTimeout(autoNextTimeout);
+      input.value = "";
+      correctionZone.innerHTML = "";
+      setTimeout(autoRecognition, 500);
+    };
+  }
+
+  // Entrée clavier = valider aussi
+  input.addEventListener("keydown", function(e){
+    if (e.key === "Enter") {
+      responses[idx] = input.value.trim();
+      nextQuestionOrSummary();
+    }
+  });
+
+  // Clique sur le bouton Valider (manuel)
+  btnValider.onclick = function() {
+    responses[idx] = input.value.trim();
+    nextQuestionOrSummary();
+  };
+
+  // Clique sur le bouton Micro
+  btnVocal.onclick = function() {
+    document.getElementById('micAlert').style.display = "none";
+    input.value = "";
+    correctionZone.innerHTML = "";
+    autoRecognition();
+  };
+}
+
+
+
+
+
+
+    
     function askQuestion(idx) {
       if (typeof questions[idx].section === "number") {
         partLabel.textContent = "Section " + questions[idx].section;
