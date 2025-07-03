@@ -34,10 +34,10 @@
     <div id="intro" style="display:none;">
       <div id="introText"></div>
       <p>
-        <label for="codeInput"><b>Code Ã  4 chiffres :</b></label><br>
+        <label for="codeInput"><b>Code à 4 chiffres :</b></label><br>
         <input type="text" id="codeInput" maxlength="4" pattern="[0-9]{4}" autocomplete="off" />
       </p>
-      <button id="startBtn">DÃ©marrer le questionnaire</button>
+      <button id="startBtn">Démarrer le questionnaire</button>
       <div id="status"></div>
     </div>
   </div>
@@ -50,32 +50,32 @@
 
   <div id="summary" style="display:none;">
     <h2>Merci !</h2>
-    <p>Voici vos rÃ©ponses :</p>
+    <p>Voici vos réponses :</p>
     <ul id="answersList"></ul>
     <label for="globalComment">Commentaire global (facultatif) :</label>
     <textarea id="globalComment" placeholder="Vous pouvez ajouter un commentaire libre ici ..."></textarea>
     <br>
-    <button id="copyBtn">Copier les rÃ©ponses</button>
+    <button id="copyBtn">Copier les réponses</button>
     <button id="pdfBtn">Exporter en PDF</button>
   </div>
 
 <script>
 // ---------------------------------
-// QUESTIONS Ã€ MODIFIER ICI
+// QUESTIONS À MODIFIER ICI
 // ---------------------------------
 let questions = [
-  { section: 1, text: "Quel Ã¢ge avez-vous ?" },
+  { section: 1, text: "Quel âge avez-vous ?" },
   { text: "Quel est votre sexe ?" },
   { text: "Quelle est votre profession ?" },
-  { section: 2, text: "Y a-t-il des antÃ©cÃ©dents mÃ©dicaux connus ? Si oui, veuillez prÃ©ciser." },
-  { text: "Prenez-vous des mÃ©dicaments actuellement ?" }
+  { section: 2, text: "Y a-t-il des antécédents médicaux connus ? Si oui, veuillez préciser." },
+  { text: "Prenez-vous des médicaments actuellement ?" }
   // ... Ajoutez d'autres questions ici ...
 ];
 
 let responses = [];
 let current = 0, codePerso = "", autoNextTimeout = null, frenchVoice = null, consigneVocaleDejaLue = false;
-let correctionResumeMode = false; // Pour correction depuis le rÃ©sumÃ©
-let delaiRecoRelance = 5000; // (en ms) DÃ©lai entre deux relances micro
+let correctionResumeMode = false; // Pour correction depuis le résumé
+let delaiRecoRelance = 5000; // (en ms) Délai entre deux relances micro
 
 const mainDiv = document.getElementById("main");
 const introText = document.getElementById("introText");
@@ -92,7 +92,7 @@ const commentGlobal = document.getElementById("globalComment");
 const vocalTip = document.getElementById("vocalTip");
 const statusDiv = document.getElementById("status");
 
-// --- SynthÃ¨se vocale ---
+// --- Synthèse vocale ---
 window.speechSynthesis.onvoiceschanged = function() {
   const voices = window.speechSynthesis.getVoices();
   frenchVoice = voices.find(v => v.lang.startsWith("fr"));
@@ -143,9 +143,9 @@ function askQuestion(idx) {
 
   // Conseils et instructions
   vocalTip.style.display = "block";
-  vocalTip.innerHTML = '<b>Astuce :</b> <span style="color:#b30000">Terminez votre rÃ©ponse en disant "point" ou "valider".</span>';
+  vocalTip.innerHTML = '<b>Astuce :</b> <span style="color:#b30000">Terminez votre réponse en disant "point" ou "valider".</span>';
 
-  // CrÃ©ation de la zone de rÃ©ponse (input + bouton micro + correction)
+  // Création de la zone de réponse (input + bouton micro + correction)
   let oldZone = document.getElementById("zoneResponse");
   if (oldZone) oldZone.remove();
   let responseZone = document.createElement("div");
@@ -156,7 +156,7 @@ function askQuestion(idx) {
   input.id = "inputResponse";
   input.style.padding = "0.5em";
   input.style.width = "70%";
-  input.placeholder = "RÃ©pondez ici ou utilisez le micro...";
+  input.placeholder = "Répondez ici ou utilisez le micro...";
   if (responses[idx]) input.value = responses[idx];
   responseZone.appendChild(input);
 
@@ -169,8 +169,8 @@ function askQuestion(idx) {
   btnVocal.style.flexDirection = "column";
   btnVocal.style.alignItems = "center";
   btnVocal.innerHTML =
-    '<span>ðŸŽ¤ RÃ©ponse orale</span>' +
-    '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Micro dÃ©sactivÃ© ? Cliquez sur ðŸŽ¤</span>';
+    '<span>🎤 Réponse orale</span>' +
+    '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Micro désactivé ? Cliquez sur 🎤</span>';
   responseZone.appendChild(btnVocal);
 
   let correctionZone = document.createElement("div");
@@ -180,7 +180,7 @@ function askQuestion(idx) {
   questionEl.parentNode.appendChild(responseZone);
   input.focus();
 
-  // Validation clavier (EntrÃ©e)
+  // Validation clavier (Entrée)
   input.addEventListener("keydown", function(e){
     if (e.key === "Enter") {
       responses[idx] = input.value.trim();
@@ -202,10 +202,10 @@ function askQuestion(idx) {
     autoRecognition(0);
   };
 
-  // Lance la synthÃ¨se vocale, PUIS la reconnaissance
+  // Lance la synthèse vocale, PUIS la reconnaissance
   if (!consigneVocaleDejaLue) {
     consigneVocaleDejaLue = true;
-    speak("Pour valider, terminez chaque rÃ©ponse en disant point ou valider.", function() {
+    speak("Pour valider, terminez chaque réponse en disant point ou valider.", function() {
       speak(questions[idx].text, function() {
         autoRecognition(0);
       });
@@ -218,7 +218,7 @@ function askQuestion(idx) {
 
   // ---- Fonction locale de reconnaissance ----
   function autoRecognition(relanceCount = 0) {
-    // ajuste le nombre de relances - en general 10 mais maintenant 20, peut Ãªtre plus !
+    // ajuste le nombre de relances - en general 10 mais maintenant 20, peut être plus !
     const maxRelances = 20; // si le micro s'arrete prematurement
 
     btnVocal.disabled = true;
@@ -227,22 +227,22 @@ function askQuestion(idx) {
       if (rep && rep.trim()) {
         // --- ACCUMULATION des fragments ---
         transcriptAccumule += " " + rep.trim();
-        // Recherche mot-clÃ© de fin (franÃ§ais) UNIQUEMENT EN FIN DE REPONSE accumulÃ©e
-        let endsWithMotCle = transcriptAccumule.match(/\b(point|valider|terminÃ©|fin)\b[\s.?!]*$/i);
-        let cleanRep = transcriptAccumule.replace(/\b(point|valider|terminÃ©|fin)\b[\s.?!]*$/i, '').trim();
+        // Recherche mot-clé de fin (français) UNIQUEMENT EN FIN DE REPONSE accumulée
+        let endsWithMotCle = transcriptAccumule.match(/\b(point|valider|terminé|fin)\b[\s.?!]*$/i);
+        let cleanRep = transcriptAccumule.replace(/\b(point|valider|terminé|fin)\b[\s.?!]*$/i, '').trim();
 
-        // Si rÃ©ponse vide aprÃ¨s mot-clÃ©, on valide quand mÃªme
+        // Si réponse vide après mot-clé, on valide quand même
         if (endsWithMotCle) {
           input.value = cleanRep;
           responses[idx] = cleanRep;
           correctionZone.innerHTML = "";
-          // CrÃ©e le bouton Corriger
+          // Crée le bouton Corriger
           let btnRetry = document.createElement("button");
           btnRetry.textContent = "Corriger";
           btnRetry.style.background = "#fb8c00";
           correctionZone.appendChild(btnRetry);
 
-          // Lance le timer pour passage automatique Ã  la question suivante
+          // Lance le timer pour passage automatique à la question suivante
           let passageAuto = setTimeout(function() {
             transcriptAccumule = ""; 
             if (correctionResumeMode) {
@@ -265,19 +265,19 @@ function askQuestion(idx) {
         // sinon relance la reco
         else if (relanceCount < maxRelances) {
           input.value = transcriptAccumule + " ...";
-          afficherZoneValiderOuAttente("En attente de la fin de votre rÃ©ponse (dites \"point\" ou \"valider\")...");
+          afficherZoneValiderOuAttente("En attente de la fin de votre réponse (dites \"point\" ou \"valider\")...");
           setTimeout(() => autoRecognition(relanceCount + 1), delaiRecoRelance);
         // trop de relances, propose de valider, corriger manuellement
         } else {
-          afficherZoneValiderOuAttente("Aucun mot de fin dÃ©tectÃ© aprÃ¨s plusieurs tentatives. Vous pouvez valider ou recommencer.");
+          afficherZoneValiderOuAttente("Aucun mot de fin détecté après plusieurs tentatives. Vous pouvez valider ou recommencer.");
         }
       } else {
         // (reco n'entend rien du tout)
         if (relanceCount < maxRelances) {
-          afficherZoneValiderOuAttente("Je n'ai rien entendu. RÃ©pondez Ã  nouveau ou validez si tout est correct.");
+          afficherZoneValiderOuAttente("Je n'ai rien entendu. Répondez à nouveau ou validez si tout est correct.");
           setTimeout(() => autoRecognition(relanceCount + 1), delaiRecoRelance);
         } else {
-          afficherZoneValiderOuAttente("Aucune rÃ©ponse dÃ©tectÃ©e aprÃ¨s plusieurs tentatives. Vous pouvez valider ou rÃ©essayer.");
+          afficherZoneValiderOuAttente("Aucune réponse détectée après plusieurs tentatives. Vous pouvez valider ou réessayer.");
         }
       }
     });
@@ -322,7 +322,7 @@ function showSummary() {
   answersList.innerHTML = "";
   questions.forEach((q, i) => {
     const li = document.createElement("li");
-    li.innerHTML = `<b>Section ${q.section || ""}</b> â€” ${q.text} : <span id="rep${i}">${responses[i] ? responses[i] : "<em>(Aucune rÃ©ponse)</em>"}</span> `;
+    li.innerHTML = `<b>Section ${q.section || ""}</b> — ${q.text} : <span id="rep${i}">${responses[i] ? responses[i] : "<em>(Aucune réponse)</em>"}</span> `;
     let btnCorriger = document.createElement("button");
     btnCorriger.textContent = "Corriger";
     btnCorriger.style.marginLeft = "1em";
@@ -343,17 +343,17 @@ window.onload = function() {
     document.getElementById('btnCommencer').style.display = 'none';
     // Affichage de l'intro avec innerHTML
     introText.innerHTML = `
-      <p>Je vais vous poser quelques questions sur les derniÃ¨res semaines.</p>
-      <p>Les questions sont regroupÃ©es en sections.</p>
+      <p>Je vais vous poser quelques questions se rapportant à ces dernières semaines.</p>
+      <p>Les questions sont regroupées en sections.</p>
       <p>Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant <b>point</b> ou <b>valider</b> quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire.</p>
-      <p>Si votre ordinateur demande â€œce site veut utiliser le microâ€, rÃ©pondez <b>autoriser</b>.</p>
-      <p>En cas dâ€™erreur, vous pouvez utiliser le micro ou saisir votre rÃ©ponse au clavier.</p>
-      <p>Ã€ la fin, un commentaire global est possible et vous pourrez corriger, copier vos rÃ©ponses ou les enregistrer en PDF grÃ¢ce aux boutons prÃ©vus Ã  cet effet.</p>
-      <p><b>Entrez maintenant un code Ã  4 chiffres de votre choix en les tapant sur le clavier.</b></p>
+      <p>Si votre ordinateur demande “ce site veut utiliser le micro”, répondez <b>autoriser</b>.</p>
+      <p>En cas d’erreur, vous pouvez utiliser le micro ou saisir votre réponse au clavier.</p>
+      <p>À la fin, un commentaire global est possible et vous pourrez corriger, copier vos réponses ou les enregistrer en PDF grâce aux boutons prévus à cet effet.</p>
+      <p><b>Entrez maintenant un code à 4 chiffres de votre choix en les tapant sur le clavier.</b></p>
     `;
     document.getElementById('intro').style.display = "block";
     setTimeout(function() {
-      speak("Je vais vous poser quelques questions sur les derniÃ¨res semaines. Les questions sont regroupÃ©es en sections. Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant point ou valider quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire. Si votre ordinateur demande d'utiliser le micro, rÃ©pondez autoriser. En cas dâ€™erreur, vous pouvez utiliser le micro ou saisir votre rÃ©ponse au clavier. Ã€ la fin, un commentaire global est possible et vous pourrez corriger, copier vos rÃ©ponses ou les enregistrer en PDF grÃ¢ce aux boutons prÃ©vus Ã  cet effet. Entrez maintenant un code Ã  4 chiffres de votre choix en les tapant sur le clavier.", function() {
+      speak("Je vais vous poser quelques questions se rapportant à ces dernières semaines. Les questions sont regroupées en sections. Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant point ou valider quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire. Si votre ordinateur demande d'utiliser le micro, répondez autoriser. En cas d’erreur, vous pouvez utiliser le micro ou saisir votre réponse au clavier. À la fin, un commentaire global est possible et vous pourrez corriger, copier vos réponses ou les enregistrer en PDF grâce aux boutons prévus à cet effet. Entrez maintenant un code à 4 chiffres de votre choix en les tapant sur le clavier.", function() {
         codeInput.focus();
       });
     }, 300);
@@ -361,7 +361,7 @@ window.onload = function() {
   startBtn.onclick = function() {
     const code = codeInput.value.trim();
     if (!/^\d{4}$/.test(code)) {
-      statusDiv.textContent = "Veuillez entrer un code Ã  4 chiffres.";
+      statusDiv.textContent = "Veuillez entrer un code à 4 chiffres.";
       return;
     }
     codePerso = code;
@@ -371,7 +371,7 @@ window.onload = function() {
     responses = [];
     askQuestion(current);
   };
-  // Permettre EntrÃ©e pour dÃ©marrer aprÃ¨s le code
+  // Permettre Entrée pour démarrer après le code
   codeInput.addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
       startBtn.click();
@@ -379,10 +379,10 @@ window.onload = function() {
   });
   copyBtn.onclick = function() {
     const txt = "Code : " + codePerso + "\n"
-      + questions.map((q, i) => "Section " + (q.section||"") + " â€” " + q.text + " : " + (responses[i] || "(Aucune rÃ©ponse)")).join("\n")
+      + questions.map((q, i) => "Section " + (q.section||"") + " — " + q.text + " : " + (responses[i] || "(Aucune réponse)")).join("\n")
       + "\nCommentaire global : " + commentGlobal.value;
     navigator.clipboard.writeText(txt);
-    alert("RÃ©ponses copiÃ©es !");
+    alert("Réponses copiées !");
   };
   pdfBtn.onclick = function() { window.print(); };
 };
