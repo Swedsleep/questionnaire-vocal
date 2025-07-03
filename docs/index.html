@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Questionnaire DSM-5 (Vocal)</title>
+  <title>Questionnaire DSM-5 (Voix)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
     #main, #questionnaire, #summary { background: #fff; padding: 2em; border-radius: 1em; box-shadow: 0 2px 10px #0056cc22; max-width: 650px; margin: 3em auto 2em; }
@@ -13,278 +13,127 @@
     button { background: #0056cc; color: #fff; border: none; border-radius: 1em; padding: 0.7em 1.7em; font-size: 1.1em; margin: 0.7em 0.7em 0 0; cursor: pointer; }
     button:disabled { background: #aaa; }
     #globalComment { width: 98%; min-height: 40px; font-size: 1.05em; padding: 0.5em; border-radius: 0.6em; border: 1px solid #bbb; margin-top: 0.7em; }
-    #pauseBtn, #resumeBtn { background: #fb8c00; color: #fff; }
-    @media (max-width: 700px) {
-      #main, #questionnaire, #summary { padding: 0.7em; }
-      button { padding: 0.5em 1em; font-size: 1em; }
-    }
-    .partTitle { font-size:1.22em; font-weight: bold; color:#337; margin-top:1.7em; }
-    #zoneResponse { margin-top: 1.7em; }
-    #zoneResponse input[type="text"] { width: 60%; min-width: 100px; }
-    #zoneResponse button { padding: 0.6em 1.4em; }
-    #introText {
-      background: #eaf2ff;
-      border-left: 5px solid #0056cc;
-      padding: 1em;
-      margin-bottom: 1em;
-      font-size: 1.13em;
-      color: #222;
-    }
-    #langAdvice {
-      color: #c90;
-      font-size: 0.95em;
-      margin-bottom: 1.4em;
-      max-width: 600px;
-      background: #fffbe8;
-      border-left: 5px solid #fb8c00;
-      padding: 0.7em 1em;
-    }
-    #voiceWarning {
-      color: #b30000;
-      background: #fff0f0;
-      border-left: 6px solid #b30000;
-      padding: 0.8em 1em;
-      margin-bottom: 1em;
-      font-size: 1.05em;
-      display: none;
+    #vocalTip {
+      font-size:1.13em;
+      margin:0.8em 0 1.2em 0;
+      color:#b30000;
+      background: #fff8c2;
+      border-left: 6px solid #ff9900;
+      padding: 0.6em 1em;
       font-weight: bold;
-      max-width: 650px;
-    }
-    #mainStart {
-      text-align:center; margin:2em 0;
-    }
-    #btnCommencer {
-      font-size:1.3em; padding:1em 3em; border-radius:1.6em; margin-top:1.6em;
-      box-shadow: 0 2px 10px #0056cc22;
+      display: block;
     }
   </style>
 </head>
 <body>
- <div id="voiceWarning"></div>
   <div id="main">
-    <h1>Questionnaire DSM-5 (Vocal)</h1>
-    <div id="mainStart">
-      <button id="btnCommencer">Commencer</button>
-      <div id="chromeAdvice" style="color:#888;font-size:0.98em;max-width:500px;margin:0.7em auto 0 auto;">
-        ⚠️ Sur Chrome, la voix peut ne pas démarrer lors de l’introduction, mais fonctionnera ensuite pour chaque question.
-      </div>
+    <h1>Questionnaire DSM-5 (Voix)</h1>
+    <div style="margin:1.5em 0">
+      <button id="btnCommencer" style="font-size:1.22em;padding:0.9em 3em;">Commencer</button>
     </div>
     <div id="intro" style="display:none;">
-      <p id="introText"></p>
-      <p id="langAdvice">
-        Pour une expérience optimale : <b>utilisez Google Chrome</b> sur ordinateur ou Android.<br>
-        Si la voix n’est pas en français ou si le micro ne fonctionne pas, vérifiez les paramètres de langue de votre navigateur et de votre appareil.<br>
-        La reconnaissance vocale n’est pas toujours disponible sur Safari (iPhone/iPad) ou Firefox.
-      </p>
+      <div id="introText"></div>
       <p>
-        <label for="codeInput"><b>Entrez un code de 4 chiffres (au choix) :</b></label><br>
+        <label for="codeInput"><b>Code Ã  4 chiffres :</b></label><br>
         <input type="text" id="codeInput" maxlength="4" pattern="[0-9]{4}" autocomplete="off" />
       </p>
-      <button id="startBtn">Démarrer le questionnaire</button>
+      <button id="startBtn">DÃ©marrer le questionnaire</button>
       <div id="status"></div>
     </div>
-  </div> 
+  </div>
 
   <div id="questionnaire" style="display:none;">
     <div id="partLabel" style="font-size:1.13em;color:#0056cc;margin-bottom:1em;"></div>
+    <div id="vocalTip"></div>
     <p id="question"></p>
-    <button id="pauseBtn">Pause</button>
-    <button id="resumeBtn" style="display:none;">Reprendre</button>
   </div>
+
   <div id="summary" style="display:none;">
-    <h2>Merci !</h2>
-    <p>Voici vos réponses :</p>
+    <h2>Merci !</h2>
+    <p>Voici vos rÃ©ponses :</p>
     <ul id="answersList"></ul>
-    <label for="globalComment">Commentaire global (optionnel) :</label>
-    <textarea id="globalComment" placeholder="Vous pouvez ici ajouter tout commentaire libre..."></textarea>
+    <label for="globalComment">Commentaire global (facultatif) :</label>
+    <textarea id="globalComment" placeholder="Vous pouvez ajouter un commentaire libre ici ..."></textarea>
     <br>
-    <button id="copyBtn">Copier les réponses</button>
+    <button id="copyBtn">Copier les rÃ©ponses</button>
     <button id="pdfBtn">Exporter en PDF</button>
-    <p style="font-size:0.97em; color:#666; margin-top:2em;">Pour transmettre à votre professionnel, copiez vos réponses ou exportez en PDF puis envoyez-les par mail.</p>
   </div>
-  <script>
-    // Force le navigateur à charger les voix synthétiques (pour Chrome)
-    window.speechSynthesis.getVoices();
 
-    const introTexte = `Je vais vous poser plusieurs questions portant sur les dernières semaines. 
-Commencez par entrer un code de 4 chiffres que vous choisissez à votre guise. 
-Ces questions sont groupées en 23 sections : prenez votre temps, répondez calmement, 
-vous pouvez commenter et faire une pause. S'il y a erreur, utilisez le micro ou écrivez votre réponse. 
-À la fin, un commentaire global est possible et vous pourrez copier vos réponses 
-ou les enregistrer en PDF grâce aux boutons prévus à cet effet.`;
+<script>
+// ---------------------------------
+// QUESTIONS Ã€ MODIFIER ICI
+// ---------------------------------
+let questions = [
+  { section: 1, text: "Quel Ã¢ge avez-vous ?" },
+  { text: "Quel est votre sexe ?" },
+  { text: "Quelle est votre profession ?" },
+  { section: 2, text: "Y a-t-il des antÃ©cÃ©dents mÃ©dicaux connus ? Si oui, veuillez prÃ©ciser." },
+  { text: "Prenez-vous des mÃ©dicaments actuellement ?" }
+  // ... Ajoutez d'autres questions ici ...
+];
 
-    // -------------------- QUESTIONS DSM-5 --------------------
-    const questions = [
-      // Section 1 : Informations personnelles
-      { section: 1, text: "Quel est votre âge ?" },
-      { text: "Quel est votre sexe ?" },
-      { text: "Quel est votre profession ?" },
-      // Section 2 : Antécédents médicaux
-      { section: 2, text: "Y a-t-il des antécédents médicaux connus ? Si oui, veuillez préciser." },
-      { text: "Des traitements médicamenteux sont-ils actuellement suivis ? Si oui, veuillez indiquer lesquels, y compris les médicaments sans ordonnance et les compléments alimentaires." },
-      // Section 3 : Symptômes d’anxiété
-      { section: 3, text: "Ressentez-vous de la nervosité, de l’anxiété ou une tension excessive ?" },
-      { text: "Avez-vous tendance à vous inquiéter excessivement pour diverses choses, ou à ne pas pouvoir contrôler vos inquiétudes ?" },
-      { text: "Avez-vous des difficultés à vous concentrer, par exemple en lisant ou en regardant la télévision ?" },
-      { text: "Vous sentez-vous agité(e), avez-vous du mal à rester assis(e) tranquillement ?" },
-      { text: "Observez-vous des troubles de l’appétit, tels qu’une perte ou une augmentation de l’appétit ?" },
-      { text: "Ressentez-vous un sentiment d’échec ou d’avoir déçu vous-même ou votre entourage ?" },
-      // Section 4 : Symptômes dépressifs
-      { section: 4, text: "Manquez-vous d’intérêt ou de plaisir à faire des choses qui vous plaisaient auparavant ?" },
-      { text: "Ressentez-vous une humeur dépressive, une tristesse ou un sentiment de désespoir ?" },
-      { text: "Vous sentez-vous fatigué(e) ou avez-vous un manque d’énergie ?" },
-      // Section 5 : Symptômes obsessionnels-compulsifs (TOC)
-      { section: 5, text: "Répétez-vous certains gestes, comme vous laver les mains, compter, vérifier ou organiser des objets ? (Si non, passez à la section suivante)" },
-      { text: "Ces comportements sont-ils effectués en réponse à une pensée obsessionnelle ou une peur ?" },
-      { text: "Ces pensées ou comportements occupent-ils plus d’une heure par jour ou perturbent-ils significativement votre vie quotidienne ?" },
-      // Section 6 : Irritabilité et colère
-      { section: 6, text: "Êtes-vous facilement irritable ou en colère ?" },
-      { text: "Estimez-vous que vos accès de colère sont disproportionnés par rapport à la situation ?" },
-      // Section 7 : Symptômes maniaques
-      { section: 7, text: "Traversez-vous des périodes où vous vous sentez particulièrement énergique, euphorique ou surexcité(e) ?" },
-      { text: "Lors de ces périodes, avez-vous tendance à entreprendre des activités qui pourraient avoir des conséquences négatives ?" },
-      // Section 8 : Symptômes dissociatifs
-      { section: 8, text: "Vous arrive-t-il de vous sentir détaché(e) de vous-même ou de votre environnement ?" },
-      { text: "Avez-vous déjà ressenti une impression d’irréalité à propos de votre environnement ?" },
-      // Section 9 : Troubles de la mémoire
-      { section: 9, text: "Rencontrez-vous des difficultés de mémoire, comme oublier des informations ou perdre le sens de l’orientation (par exemple, retrouver votre chemin) ?" },
-      // Section 10 : Fonctionnement social et professionnel
-      { section: 10, text: "Dans quelle mesure ces difficultés ont-elles affecté votre capacité à travailler, à vous occuper de votre domicile ou à entretenir des relations avec autrui ?" },
-      { text: "À quel point estimez-vous que votre situation de vie actuelle et vos relations sociales vous apportent du soutien ?" },
-      // Section 11 : Usage de substances
-      { section: 11, text: "Utilisez-vous du tabac, de l’alcool, des drogues ou de la caféine ? Si oui, veuillez indiquer la fréquence et la quantité." },
-      // Section 12 : Symptômes somatiques
-      { section: 12, text: "Ressentez-vous des douleurs chroniques ou un inconfort physique ? Si oui, merci de préciser." },
-      { text: "Y a-t-il d’autres symptômes physiques que vous avez remarqués et qui vous préoccupent ?" },
-      { text: "Comment évalueriez-vous votre état de santé physique global (mauvais, passable, bon, très bon, excellent) ?" },
-      // Section 13 : Idées suicidaires
-      { section: 13, text: "Avez-vous eu des pensées selon lesquelles il vaudrait mieux être mort(e) ou vous blesser d’une quelconque manière ?" },
-      // Section 14 : Qualité du sommeil
-      { section: 14, text: "Comment évalueriez-vous la qualité générale de votre sommeil ?" },
-      { text: "Éprouvez-vous des difficultés à vous endormir ou à rester endormi(e) durant la nuit ?" },
-      { text: "Vous réveillez-vous le matin en vous sentant reposé(e) ou encore fatigué(e) ?" },
-      { text: "Avez-vous des troubles du sommeil, tels que des cauchemars, du somnambulisme ou des réveils fréquents ?" },
-      { text: "Utilisez-vous des médicaments ou des substances pour faciliter le sommeil ?" },
-      { text: "Des changements de mode de vie ou des événements récents ont-ils modifié votre rythme de sommeil ?" },
-      // Section 15 : Mode de vie
-      { section: 15, text: "À quelle fréquence pratiquez-vous une activité physique ou de l’exercice ?" },
-      // Section 16 : Antécédents de santé mentale
-      { section: 16, text: "Un diagnostic de trouble psychique a-t-il déjà été posé auparavant ?" },
-      { text: "Un traitement pour des difficultés psychiques a-t-il déjà été suivi (thérapie, conseil, médication) ? Si oui, merci de préciser." },
-      // Section 17 : Attentes et objectifs de la consultation
-      { section: 17, text: "Y a-t-il un sujet spécifique que vous souhaitez aborder lors de la consultation ?" },
-      { text: "Quels sont vos objectifs ou attentes en consultant actuellement ?" },
-      // Section 18 : Symptômes psychotiques
-      { section: 18, text: "Avez-vous perçu des voix que les autres ne semblent pas entendre ?" },
-      { text: "Avez-vous eu des croyances ou des idées que d’autres personnes considèrent comme étranges ou inhabituelles ?" },
-      // Section 19 : Symptômes alimentaires
-      { section: 19, text: "Vous arrive-t-il de vous inquiéter de façon excessive pour votre poids ou votre apparence corporelle ?" },
-      { text: "Avez-vous eu des épisodes de restriction alimentaire importante, de vomissements volontaires, ou de prises alimentaires excessives et incontrôlables ?" },
-      // Section 20 : Symptômes sexuels
-      { section: 20, text: "Avez-vous constaté une baisse notable de votre intérêt ou de votre satisfaction concernant votre sexualité ?" },
-      // Section 21 : Symptômes de stress post-traumatique
-      { section: 21, text: "Avez-vous été exposé(e) à un événement traumatique qui continue à vous perturber (cauchemars, flashbacks, évitement) ?" },
-      { text: "Présentez-vous des réactions de stress importantes en lien avec des souvenirs douloureux ?" },
-      // Section 22 : Symptômes d’inattention/hyperactivité
-      { section: 22, text: "Rencontrez-vous souvent des difficultés à rester concentré(e), à terminer ce que vous commencez, ou à rester en place ?" },
-      { text: "Êtes-vous fréquemment distrait(e) ou ressentez-vous une agitation intérieure ou physique inhabituelle ?" },
-      // Section 23 : Sécurité et abus
-      { section: 23, text: "Avez-vous été exposé(e) à des situations de violence ou de maltraitance ? Si oui, souhaitez-vous en parler ?" }
-    ];
+let responses = [];
+let current = 0, codePerso = "", autoNextTimeout = null, frenchVoice = null, consigneVocaleDejaLue = false;
+let correctionResumeMode = false; // Pour correction depuis le rÃ©sumÃ©
+let delaiRecoRelance = 5000; // (en ms) DÃ©lai entre deux relances micro
 
-    let responses = [];
-    let current = 0;
-    let codePerso = "";
-    let isPaused = false;
-    let autoNextTimeout = null;
-    let speechRecognitionActive = false;
-    let speechRecognitionInstance = null;
-    let frenchVoice = null;
+const mainDiv = document.getElementById("main");
+const introText = document.getElementById("introText");
+const codeInput = document.getElementById("codeInput");
+const startBtn = document.getElementById("startBtn");
+const questionnaireDiv = document.getElementById("questionnaire");
+const partLabel = document.getElementById("partLabel");
+const questionEl = document.getElementById("question");
+const summaryDiv = document.getElementById("summary");
+const answersList = document.getElementById("answersList");
+const copyBtn = document.getElementById("copyBtn");
+const pdfBtn = document.getElementById("pdfBtn");
+const commentGlobal = document.getElementById("globalComment");
+const vocalTip = document.getElementById("vocalTip");
+const statusDiv = document.getElementById("status");
 
-    const mainDiv = document.getElementById("main");
-    const introText = document.getElementById("introText");
-    const codeInput = document.getElementById("codeInput");
-    const startBtn = document.getElementById("startBtn");
-    const questionnaireDiv = document.getElementById("questionnaire");
-    const partLabel = document.getElementById("partLabel");
-    const questionEl = document.getElementById("question");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const resumeBtn = document.getElementById("resumeBtn");
-    const summaryDiv = document.getElementById("summary");
-    const answersList = document.getElementById("answersList");
-    const copyBtn = document.getElementById("copyBtn");
-    const pdfBtn = document.getElementById("pdfBtn");
-    const statusDiv = document.getElementById("status");
-    const commentGlobal = document.getElementById("globalComment");
-    const voiceWarning = document.getElementById("voiceWarning");
+// --- SynthÃ¨se vocale ---
+window.speechSynthesis.onvoiceschanged = function() {
+  const voices = window.speechSynthesis.getVoices();
+  frenchVoice = voices.find(v => v.lang.startsWith("fr"));
+};
 
-    // --- [Vérifie la disponibilité de la reconnaissance vocale dans le navigateur] ---
-    function checkSpeechRecognitionSupport() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        statusDiv.innerHTML = "<span style='color:#c00'>La reconnaissance vocale (microphone) n'est pas disponible sur ce navigateur.<br>Utilisez Google Chrome sur ordinateur ou Android pour activer la saisie vocale.<br>Sur iPhone/iPad (Safari) ou Firefox, cette fonction est désactivée.</span>";
-        return false;
-      }
-      return true;
-    }
+function speak(txt, cb) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(txt);
+  utter.lang = "fr-FR";
+  if (frenchVoice) utter.voice = frenchVoice;
+  if (typeof cb === "function") utter.onend = cb;
+  window.speechSynthesis.speak(utter);
+}
 
-    // --- [Affiche l'alerte si aucune voix FR n'est détectée] ---
-    window.speechSynthesis.onvoiceschanged = function() {
-      const voices = window.speechSynthesis.getVoices();
-      frenchVoice = voices.find(v => v.lang.startsWith("fr") || v.lang === "fr-FR");
-      if (!frenchVoice) {
-        voiceWarning.style.display = "block";
-        voiceWarning.innerHTML = "⚠️ Aucune voix française détectée sur ce système. <br>La synthèse vocale risque d’être en anglais ou avec un accent étranger.<br>Pour corriger : installez une voix française dans les paramètres de votre système ou navigateur.<br>Utilisez de préférence Chrome sous Windows, Mac ou Android.";
-      } else {
-        voiceWarning.style.display = "none";
-      }
-    };
+function checkSpeechRecognitionSupport() {
+  return ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+}
 
-    // --- [Lecture vocale d'un texte, si possible en français] ---
-    function speak(txt, onendCallback) {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(txt);
-      utter.lang = "fr-FR";
-      if (frenchVoice) utter.voice = frenchVoice;
-      if (typeof onendCallback === "function") {
-        utter.onend = onendCallback;
-      }
-      window.speechSynthesis.speak(utter);
-    }
+function startRecognition(callback) {
+  if (!checkSpeechRecognitionSupport()) {
+    callback(""); return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "fr-FR";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.start();
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript.trim();
+    callback(transcript);
+  };
+  recognition.onerror = function(event) {
+    callback("");
+  };
+}
 
-    // --- [Lance la reconnaissance vocale pour une réponse à une question] ---
-    function startRecognition(callback) {
-      if (!checkSpeechRecognitionSupport()) {
-        callback("");
-        return;
-      }
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = "fr-FR";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.start();
-      speechRecognitionActive = true;
-      recognition.onresult = function(event) {
-        speechRecognitionActive = false;
-        const transcript = event.results[0][0].transcript.trim();
-        callback(transcript);
-      };
-      recognition.onerror = function(event) {
-        speechRecognitionActive = false;
-        if (event.error === "no-speech" || event.error === "aborted") {
-          callback("");
-        } else {
-          alert("Erreur vocale : " + event.error + "\nVous pouvez répondre par écrit ou relancer le micro.");
-          callback("");
-        }
-      };
-      speechRecognitionInstance = recognition;
-    }
-
-    // --- [Affiche une question à l'utilisateur, gère réponse manuelle ou vocale] ---
+// --- Affichage d'une question ---
 function askQuestion(idx) {
-  // Affiche la section si c'est un début de section
+	let transcriptAccumule = "";
   if (typeof questions[idx].section === "number") {
     partLabel.textContent = "Section " + questions[idx].section;
   } else {
@@ -292,355 +141,251 @@ function askQuestion(idx) {
   }
   questionEl.innerHTML = questions[idx].text;
 
-  // Crée la zone de réponse
-  let responseZone = document.createElement("div");
-  responseZone.style.marginTop = "1.3em";
+  // Conseils et instructions
+  vocalTip.style.display = "block";
+  vocalTip.innerHTML = '<b>Astuce :</b> <span style="color:#b30000">Terminez votre rÃ©ponse en disant "point" ou "valider".</span>';
 
-  // Champ texte pour la réponse
+  // CrÃ©ation de la zone de rÃ©ponse (input + bouton micro + correction)
+  let oldZone = document.getElementById("zoneResponse");
+  if (oldZone) oldZone.remove();
+  let responseZone = document.createElement("div");
+  responseZone.id = "zoneResponse";
+  responseZone.style.marginTop = "1.3em";
   let input = document.createElement("input");
   input.type = "text";
   input.id = "inputResponse";
   input.style.padding = "0.5em";
   input.style.width = "70%";
-  input.placeholder = "Répondez ici à la main ou utilisez le micro...";
-  responseZone.appendChild(input);
-
-  // Remet la dernière réponse si elle existe (correction)
+  input.placeholder = "RÃ©pondez ici ou utilisez le micro...";
   if (responses[idx]) input.value = responses[idx];
+  responseZone.appendChild(input);
 
   // Bouton micro
   let btnVocal = document.createElement("button");
-  btnVocal.textContent = "🎤 Répondre à voix haute";
+  btnVocal.type = "button";
   btnVocal.style.marginLeft = "1em";
+  btnVocal.style.lineHeight = "1.3";
+  btnVocal.style.display = "flex";
+  btnVocal.style.flexDirection = "column";
+  btnVocal.style.alignItems = "center";
+  btnVocal.innerHTML =
+    '<span>ðŸŽ¤ RÃ©ponse orale</span>' +
+    '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Micro dÃ©sactivÃ© ? Cliquez sur ðŸŽ¤</span>';
   responseZone.appendChild(btnVocal);
 
-  // Bouton Valider
-  let btnValider = document.createElement("button");
-  btnValider.textContent = "Valider";
-  btnValider.style.marginLeft = "1em";
-  responseZone.appendChild(btnValider);
-
-  // Zone pour correction rapide après reco vocale
   let correctionZone = document.createElement("div");
   correctionZone.style.marginTop = "0.7em";
   responseZone.appendChild(correctionZone);
 
-  // Supprime l'ancienne zone de réponse si elle existe
-  let oldZone = document.getElementById("zoneResponse");
-  if (oldZone) oldZone.remove();
-  responseZone.id = "zoneResponse";
   questionEl.parentNode.appendChild(responseZone);
-
   input.focus();
 
-  // Lecture vocale de la question, puis lance la reconnaissance vocale
-  speak(questions[idx].text, function() {
-    autoRecognition();
-  });
-
-  // --- [Reconnaissance vocale automatique, correction et auto-next] ---
-  function autoRecognition() {
-    btnVocal.disabled = true;
-    document.getElementById('micAlert').style.display = "none";
-    startRecognition(function(rep) {
-      btnVocal.disabled = false;
-      if (rep && rep.trim()) {
-        input.value = rep;
-        showCorrectionBtns(rep);
-      }
-    });
-  }
-
-  // --- [Affiche boutons de correction après reco vocale, auto-next si pas de correction] ---
-  function showCorrectionBtns(rep) {
-    correctionZone.innerHTML = '';
-    let btnOk = document.createElement("button");
-    btnOk.textContent = "C'est correct";
-    btnOk.style.background = "#2bca2b";
-    btnOk.style.marginRight = "1em";
-    let btnRetry = document.createElement("button");
-    btnRetry.textContent = "Corriger";
-    btnRetry.style.background = "#fb8c00";
-    correctionZone.appendChild(btnOk);
-    correctionZone.appendChild(btnRetry);
-
-    // --- [Auto passage à la question suivante après 3 secondes si aucune correction] ---
-    autoNextTimeout = setTimeout(function(){
-      if (input.value === rep) {
-        responses[idx] = input.value.trim();
-        nextQuestionOrSummary();
-      }
-    }, 3000);
-
-    btnOk.onclick = function() {
-      if (autoNextTimeout) clearTimeout(autoNextTimeout);
-      responses[idx] = input.value.trim();
-      nextQuestionOrSummary();
-    };
-    btnRetry.onclick = function() {
-      if (autoNextTimeout) clearTimeout(autoNextTimeout);
-      input.value = "";
-      correctionZone.innerHTML = "";
-      setTimeout(autoRecognition, 500);
-    };
-  }
-
-  // Entrée clavier = valider aussi
+  // Validation clavier (EntrÃ©e)
   input.addEventListener("keydown", function(e){
     if (e.key === "Enter") {
       responses[idx] = input.value.trim();
-      nextQuestionOrSummary();
+      correctionZone.innerHTML = "";
+      setTimeout(function() {
+        if (correctionResumeMode) {
+          correctionResumeMode = false;
+          showSummary();
+        } else {
+          nextQuestionOrSummary();
+        }
+      }, 2000);
     }
   });
 
-  // Clique sur le bouton Valider (manuel)
-  btnValider.onclick = function() {
-    responses[idx] = input.value.trim();
-    nextQuestionOrSummary();
-  };
-
-  // Clique sur le bouton Micro
+  // Relance le micro au clic sur le bouton
   btnVocal.onclick = function() {
-    document.getElementById('micAlert').style.display = "none";
-    input.value = "";
     correctionZone.innerHTML = "";
-    autoRecognition();
+    autoRecognition(0);
   };
-}
 
-
-
-
-
-
-    
-    function askQuestion(idx) {
-      if (typeof questions[idx].section === "number") {
-        partLabel.textContent = "Section " + questions[idx].section;
-      } else {
-        partLabel.textContent = "";
-      }
-      questionEl.innerHTML = questions[idx].text;
-
-      let responseZone = document.createElement("div");
-      responseZone.style.marginTop = "1.3em";
-
-      let input = document.createElement("input");
-      input.type = "text";
-      input.id = "inputResponse";
-      input.style.padding = "0.5em";
-      input.style.width = "70%";
-      input.placeholder = "Répondez ici à la main ou utilisez le micro...";
-      responseZone.appendChild(input);
-
-      if (responses[idx]) input.value = responses[idx];
-
-      let btnVocal = document.createElement("button");
-      btnVocal.textContent = "🎤 Répondre à voix haute";
-      btnVocal.style.marginLeft = "1em";
-      responseZone.appendChild(btnVocal);
-
-      let btnValider = document.createElement("button");
-      btnValider.textContent = "Valider";
-      btnValider.style.marginLeft = "1em";
-      responseZone.appendChild(btnValider);
-
-      let correctionZone = document.createElement("div");
-      correctionZone.style.marginTop = "0.7em";
-      responseZone.appendChild(correctionZone);
-
-      input.addEventListener("keydown", function(e){
-        if (e.key === "Enter") {
-          responses[idx] = input.value.trim();
-          nextQuestionOrSummary();
-        }
+  // Lance la synthÃ¨se vocale, PUIS la reconnaissance
+  if (!consigneVocaleDejaLue) {
+    consigneVocaleDejaLue = true;
+    speak("Pour valider, terminez chaque rÃ©ponse en disant point ou valider.", function() {
+      speak(questions[idx].text, function() {
+        autoRecognition(0);
       });
+    });
+  } else {
+    speak(questions[idx].text, function() {
+      autoRecognition(0);
+    });
+  }
 
-      btnValider.onclick = function() {
-        responses[idx] = input.value.trim();
-        nextQuestionOrSummary();
-      };
+  // ---- Fonction locale de reconnaissance ----
+  function autoRecognition(relanceCount = 0) {
+    // ajuste le nombre de relances - en general 10 mais maintenant 20, peut Ãªtre plus !
+    const maxRelances = 20; // si le micro s'arrete prematurement
 
-      let oldZone = document.getElementById("zoneResponse");
-      if (oldZone) oldZone.remove();
-      responseZone.id = "zoneResponse";
-      questionEl.parentNode.appendChild(responseZone);
+    btnVocal.disabled = true;
+    startRecognition(function(rep) {
+      btnVocal.disabled = false;
+      if (rep && rep.trim()) {
+        // --- ACCUMULATION des fragments ---
+        transcriptAccumule += " " + rep.trim();
+        // Recherche mot-clÃ© de fin (franÃ§ais) UNIQUEMENT EN FIN DE REPONSE accumulÃ©e
+        let endsWithMotCle = transcriptAccumule.match(/\b(point|valider|terminÃ©|fin)\b[\s.?!]*$/i);
+        let cleanRep = transcriptAccumule.replace(/\b(point|valider|terminÃ©|fin)\b[\s.?!]*$/i, '').trim();
 
-      input.focus();
-      speak(questions[idx].text);
+        // Si rÃ©ponse vide aprÃ¨s mot-clÃ©, on valide quand mÃªme
+        if (endsWithMotCle) {
+          input.value = cleanRep;
+          responses[idx] = cleanRep;
+          correctionZone.innerHTML = "";
+          // CrÃ©e le bouton Corriger
+          let btnRetry = document.createElement("button");
+          btnRetry.textContent = "Corriger";
+          btnRetry.style.background = "#fb8c00";
+          correctionZone.appendChild(btnRetry);
 
-      // --- [Reconnaissance vocale automatique, correction et auto-next] ---
-      function autoRecognition() {
-        btnVocal.disabled = true;
-        startRecognition(function(rep) {
-          btnVocal.disabled = false;
-          input.value = rep || "";
-          if (rep && rep.trim()) {
-            showCorrectionBtns(rep);
-          }
-        });
+          // Lance le timer pour passage automatique Ã  la question suivante
+          let passageAuto = setTimeout(function() {
+            transcriptAccumule = ""; 
+            if (correctionResumeMode) {
+              correctionResumeMode = false;
+              showSummary();
+            } else {
+              nextQuestionOrSummary();
+            }
+          }, 2000);
+
+          // Si on clique "Corriger", on annule le passage auto et on relance la reco
+          btnRetry.onclick = function() {
+            clearTimeout(passageAuto);
+            input.value = "";
+            transcriptAccumule = "";
+            correctionZone.innerHTML = "";
+            setTimeout(() => autoRecognition(0), 400);
+          };
+        }
+        // sinon relance la reco
+        else if (relanceCount < maxRelances) {
+          input.value = transcriptAccumule + " ...";
+          afficherZoneValiderOuAttente("En attente de la fin de votre rÃ©ponse (dites \"point\" ou \"valider\")...");
+          setTimeout(() => autoRecognition(relanceCount + 1), delaiRecoRelance);
+        // trop de relances, propose de valider, corriger manuellement
+        } else {
+          afficherZoneValiderOuAttente("Aucun mot de fin dÃ©tectÃ© aprÃ¨s plusieurs tentatives. Vous pouvez valider ou recommencer.");
+        }
+      } else {
+        // (reco n'entend rien du tout)
+        if (relanceCount < maxRelances) {
+          afficherZoneValiderOuAttente("Je n'ai rien entendu. RÃ©pondez Ã  nouveau ou validez si tout est correct.");
+          setTimeout(() => autoRecognition(relanceCount + 1), delaiRecoRelance);
+        } else {
+          afficherZoneValiderOuAttente("Aucune rÃ©ponse dÃ©tectÃ©e aprÃ¨s plusieurs tentatives. Vous pouvez valider ou rÃ©essayer.");
+        }
       }
+    });
 
-      // --- [Affiche boutons de correction après reco vocale, auto-next si pas de correction] ---
-      function showCorrectionBtns(rep) {
-        correctionZone.innerHTML = '';
-        let btnOk = document.createElement("button");
-        btnOk.textContent = "C'est correct";
-        btnOk.style.background = "#2bca2b";
-        btnOk.style.marginRight = "1em";
-        let btnRetry = document.createElement("button");
-        btnRetry.textContent = "Corriger";
-        btnRetry.style.background = "#fb8c00";
-        correctionZone.appendChild(btnOk);
-        correctionZone.appendChild(btnRetry);
-
-        // --- [Auto passage à la question suivante après 3 secondes si aucune correction] ---
-        // Pour ajuster le délai, modifie la valeur (ici 3000 ms = 3 secondes)
-        autoNextTimeout = setTimeout(function(){
-          if (input.value === rep) {
-            responses[idx] = input.value.trim();
+    function afficherZoneValiderOuAttente(message) {
+      correctionZone.innerHTML = `
+        <button id="btnValiderManuel" style="background:#20b05a;">Valider</button>
+        <button id="btnCorrigerReco" style="background:#fb8c00;margin-left:1em;">Corriger</button>
+        <div style="margin-top:0.5em;color:#b30000;">${message}</div>
+      `;
+      document.getElementById("btnValiderManuel").onclick = function() {
+        responses[idx] = input.value.trim();
+        correctionZone.innerHTML = "";
+        transcriptAccumule = "";
+        setTimeout(function() {
+          if (correctionResumeMode) {
+            correctionResumeMode = false;
+            showSummary();
+          } else {
             nextQuestionOrSummary();
           }
-        }, 3000);
-
-        btnOk.onclick = function() {
-          if (autoNextTimeout) clearTimeout(autoNextTimeout);
-          responses[idx] = input.value.trim();
-          nextQuestionOrSummary();
-        };
-        btnRetry.onclick = function() {
-          if (autoNextTimeout) clearTimeout(autoNextTimeout);
-          input.value = "";
-          correctionZone.innerHTML = "";
-          setTimeout(autoRecognition, 500);
-        };
-      }
-
-      setTimeout(() => { autoRecognition(); }, 1000);
-
-      btnVocal.onclick = function() {
+        }, 2000);
+      };
+      document.getElementById("btnCorrigerReco").onclick = function() {
         input.value = "";
+        transcriptAccumule = "";
         correctionZone.innerHTML = "";
-        autoRecognition();
+        setTimeout(() => autoRecognition(0), 400);
       };
     }
+  }
+}
 
-    // --- [Passe à la question suivante, ou affiche le résumé final] ---
-    function nextQuestionOrSummary() {
-      if (autoNextTimeout) clearTimeout(autoNextTimeout);
-      current++;
-      if (current < questions.length) askQuestion(current);
-      else showSummary();
-    }
+function nextQuestionOrSummary() {
+  if (++current < questions.length) askQuestion(current);
+  else showSummary();
+}
 
-    // --- [Affiche le résumé final des réponses avec possibilité de correction] ---
-    function showSummary() {
-      questionnaireDiv.style.display = "none";
-      summaryDiv.style.display = "block";
-      answersList.innerHTML = "";
-      questions.forEach((q, i) => {
-        const li = document.createElement("li");
-        li.innerHTML = `<b>Section ${q.section || ""}</b> — ${q.text} : <span id="rep${i}">${responses[i] || ""}</span> `;
-        let btnCorriger = document.createElement("button");
-        btnCorriger.textContent = "Corriger";
-        btnCorriger.style.marginLeft = "1em";
-        btnCorriger.onclick = function() {
-          summaryDiv.style.display = "none";
-          questionnaireDiv.style.display = "block";
-          current = i;
-          askQuestion(i);
-        };
-        li.appendChild(btnCorriger);
-        answersList.appendChild(li);
-      });
-    }
-
-    // --- [Bouton Démarrer le questionnaire] ---
-    startBtn.onclick = function() {
-      const code = codeInput.value.trim();
-      if (!/^\d{4}$/.test(code)) {
-        statusDiv.textContent = "Merci de saisir un code de 4 chiffres.";
-        return;
-      }
-      codePerso = code;
-      mainDiv.style.display = "none";
+function showSummary() {
+  questionnaireDiv.style.display = "none";
+  summaryDiv.style.display = "block";
+  answersList.innerHTML = "";
+  questions.forEach((q, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<b>Section ${q.section || ""}</b> â€” ${q.text} : <span id="rep${i}">${responses[i] ? responses[i] : "<em>(Aucune rÃ©ponse)</em>"}</span> `;
+    let btnCorriger = document.createElement("button");
+    btnCorriger.textContent = "Corriger";
+    btnCorriger.style.marginLeft = "1em";
+    btnCorriger.onclick = function() {
+      summaryDiv.style.display = "none";
       questionnaireDiv.style.display = "block";
-      current = 0;
-      responses = [];
-      resumeBtn.style.display = "none";
-      pauseBtn.style.display = "inline";
-      isPaused = false;
-      askQuestion(current);
+      current = i;
+      correctionResumeMode = true;
+      askQuestion(i);
     };
+    li.appendChild(btnCorriger);
+    answersList.appendChild(li);
+  });
+}
 
-    // --- [Met le questionnaire en pause] ---
-    pauseBtn.onclick = function() {
-      isPaused = true;
-      questionnaireDiv.style.opacity = 0.3;
-      pauseBtn.style.display = "none";
-      resumeBtn.style.display = "inline";
-      speak("Pause activée. Cliquez sur reprendre pour continuer.");
-      if (speechRecognitionInstance) {
-        try { speechRecognitionInstance.abort(); } catch(e){}
-      }
-    };
-
-    // --- [Reprend le questionnaire après une pause] ---
-    resumeBtn.onclick = function() {
-      isPaused = false;
-      questionnaireDiv.style.opacity = 1;
-      pauseBtn.style.display = "inline";
-      resumeBtn.style.display = "none";
-      speak("Reprise du questionnaire.");
-      askQuestion(current);
-    };
-
-    // --- [Copie les réponses au presse-papier] ---
-    copyBtn.onclick = function() {
-      const txt = "Code : " + codePerso + "\n"
-        + questions.map((q, i) => "Section " + (q.section||"") + " — " + q.text + " : " + (responses[i] || "")).join("\n")
-        + "\nCommentaire global : " + commentGlobal.value;
-      navigator.clipboard.writeText(txt);
-      alert("Réponses copiées !");
-    };
-
-    // --- [Export PDF via impression] ---
-    pdfBtn.onclick = function() {
-      window.print();
-    };
-
-    // --- [Logique du bouton "Commencer" (déverrouille la voix d’intro)] ---
 window.onload = function() {
-  // Vérifie si la reconnaissance vocale (micro) est disponible
-  checkSpeechRecognitionSupport();
-
-  // --- Au clic sur "Commencer" ---
   document.getElementById('btnCommencer').onclick = function() {
-    // Cache le bouton "Commencer" et le message d'avertissement Chrome
     document.getElementById('btnCommencer').style.display = 'none';
-// Ne bloque pas si chromeAdvice n'existe pas
-  var chromeAdvice = document.getElementById('chromeAdvice');
-  if (chromeAdvice) chromeAdvice.style.display = 'none';
-    document.getElementById('chromeAdvice').style.display = 'none';
-
-    // Affiche le texte d'introduction et la zone de saisie du code
-    document.getElementById('introText').textContent = introTexte;
+    // Affichage de l'intro avec innerHTML
+    introText.innerHTML = `
+      <p>Je vais vous poser quelques questions sur les derniÃ¨res semaines.</p>
+      <p>Les questions sont regroupÃ©es en sections.</p>
+      <p>Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant <b>point</b> ou <b>valider</b> quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire.</p>
+      <p>Si votre ordinateur demande â€œce site veut utiliser le microâ€, rÃ©pondez <b>autoriser</b>.</p>
+      <p>En cas dâ€™erreur, vous pouvez utiliser le micro ou saisir votre rÃ©ponse au clavier.</p>
+      <p>Ã€ la fin, un commentaire global est possible et vous pourrez corriger, copier vos rÃ©ponses ou les enregistrer en PDF grÃ¢ce aux boutons prÃ©vus Ã  cet effet.</p>
+      <p><b>Entrez maintenant un code Ã  4 chiffres de votre choix en les tapant sur le clavier.</b></p>
+    `;
     document.getElementById('intro').style.display = "block";
-
-    // --- IMPORTANT : Délai de 350ms pour laisser à Chrome le temps d'activer la synthèse vocale
-    // (Sur Edge ou Firefox, ce délai n'impacte rien)
     setTimeout(function() {
-      // Lecture vocale de l'introduction
-      speak(introTexte, function() {
-        // Puis lecture vocale "Entrez vos 4 chiffres"
-        speak("Entrez vos 4 chiffres.", function() {
-          // Focus automatique sur le champ code après la voix
-          document.getElementById('codeInput').focus();
-        });
+      speak("Je vais vous poser quelques questions sur les derniÃ¨res semaines. Les questions sont regroupÃ©es en sections. Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant point ou valider quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire. Si votre ordinateur demande d'utiliser le micro, rÃ©pondez autoriser. En cas dâ€™erreur, vous pouvez utiliser le micro ou saisir votre rÃ©ponse au clavier. Ã€ la fin, un commentaire global est possible et vous pourrez corriger, copier vos rÃ©ponses ou les enregistrer en PDF grÃ¢ce aux boutons prÃ©vus Ã  cet effet. Entrez maintenant un code Ã  4 chiffres de votre choix en les tapant sur le clavier.", function() {
+        codeInput.focus();
       });
-    }, 350);
+    }, 300);
   };
+  startBtn.onclick = function() {
+    const code = codeInput.value.trim();
+    if (!/^\d{4}$/.test(code)) {
+      statusDiv.textContent = "Veuillez entrer un code Ã  4 chiffres.";
+      return;
+    }
+    codePerso = code;
+    mainDiv.style.display = "none";
+    questionnaireDiv.style.display = "block";
+    current = 0;
+    responses = [];
+    askQuestion(current);
+  };
+  // Permettre EntrÃ©e pour dÃ©marrer aprÃ¨s le code
+  codeInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      startBtn.click();
+    }
+  });
+  copyBtn.onclick = function() {
+    const txt = "Code : " + codePerso + "\n"
+      + questions.map((q, i) => "Section " + (q.section||"") + " â€” " + q.text + " : " + (responses[i] || "(Aucune rÃ©ponse)")).join("\n")
+      + "\nCommentaire global : " + commentGlobal.value;
+    navigator.clipboard.writeText(txt);
+    alert("RÃ©ponses copiÃ©es !");
+  };
+  pdfBtn.onclick = function() { window.print(); };
 };
-  </script>
+</script>
 </body>
 </html>
