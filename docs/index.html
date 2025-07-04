@@ -63,13 +63,131 @@
 // ---------------------------------
 // QUESTIONS À MODIFIER ICI
 // ---------------------------------
+  // Section 1 
+  // Section 2 Antecedents medicaux
+  // Section 3 Anxiété
+  // Section 4 Depression
+  // Section 5 TOC
+  // Section 6 Irritabilité et colère
+  // Section 7 Maniaque/Hypomaniaque
+  // Section 8 Dissociation
+  // Section 9 Mémoire
+  // Section 10 Impact fonctionnel et soutien
+  // Section 11 Substances
+  // Section 12 Santé physique/douleurs
+  // Section 13 Suicidaire
+  // Section 14 Sommeil
+  // Section 15 Activité physique
+  // Section 16 Antecedents psychiatriques
+   // Section 17 Psychose
+  // Section 18 Alimentaire
+  // Section 19 Sexuel
+  // Section 20 PTSD
+  // Section 21 Hyperativité/attention
+  // Section 22 Maltraitance
+  // Section 23 Objectifs de la consultatation
+
+
+
 let questions = [
-  { section: 1, text: "Quel âge avez-vous ?" },
+   // Section 1 
+  { section: 1, text: "Quel est votre âge?" },
   { text: "Quel est votre sexe ?" },
-  { text: "Quelle est votre profession ?" },
+  { text: "Quel est votre profession ?" },
+
+  // Section 2 Antecedents medicaux
   { section: 2, text: "Y a-t-il des antécédents médicaux connus ? Si oui, veuillez préciser." },
-  { text: "Prenez-vous des médicaments actuellement ?" }
-  // ... Ajoutez d'autres questions ici ...
+  { text: "Des traitements <b>médicamenteux</b> sont-ils actuellement suivis ? Si oui, veuillez indiquer lesquels, y compris les médicaments sans ordonnance et les compléments alimentaires." },
+
+  // Section 3 Anxiété
+  { section: 3, text: "Ressentez-vous de la nervosité, de l’anxiété ou une tension excessive ?" },
+  { text: "Avez-vous tendance à vous inquiéter excessivement pour diverses choses, ou à ne pas pouvoir contrôler vos inquiétudes ?" },
+  { text: "Avez-vous des difficultés à vous concentrer, par exemple en lisant ou en regardant la télévision ?" },
+  { text: "Vous sentez-vous agité(e), avez-vous du mal à rester assis(e) tranquillement ?" },
+  { text: "Observez-vous des troubles de l’appétit, tels qu’une perte ou une augmentation de l’appétit ?" },
+  { text: "Ressentez-vous un sentiment d’échec ou d’avoir déçu vous-même ou votre entourage ?" },
+
+  // Section 4 Depression
+  { section: 4, text: "Manquez-vous d’intérêt ou de plaisir à faire des choses qui vous plaisaient auparavant ?" },
+  { text: "Ressentez-vous une humeur dépressive, une tristesse ou un sentiment de désespoir ?" },
+  { text: "Vous sentez-vous fatigué(e) ou avez-vous un manque d’énergie ?" },
+
+  // Section 5 TOC
+  { section: 5, text: "Répétez-vous certains gestes, comme vous laver les mains, compter, vérifier ou organiser des objets ? (Si non, passez à la section suivante)" },
+  { text: "Ces comportements sont-ils effectués en réponse à une pensée obsessionnelle ou une peur ?" },
+  { text: "Ces pensées ou comportements occupent-ils plus d’une heure par jour ou perturbent-ils significativement votre vie quotidienne ?" },
+
+  // Section 6 Irritabilité et colère
+  { section: 6, text: "Êtes-vous facilement irritable ou en colère ?" },
+  { text: "Estimez-vous que vos accès de colère sont disproportionnés par rapport à la situation ?" },
+
+  // Section 7 Maniaque/Hypomaniaque
+  { section: 7, text: "Traversez-vous des périodes où vous vous sentez particulièrement énergique, euphorique ou surexcité(e) ?" },
+  { text: "Lors de ces périodes, avez-vous tendance à entreprendre des activités qui pourraient avoir des conséquences négatives ?" },
+
+  // Section 8 Dissociation
+  { section: 8, text: "Vous arrive-t-il de vous sentir détaché(e) de vous-même ou de votre environnement ?" },
+  { text: "Avez-vous déjà ressenti une impression d’irréalité à propos de votre environnement ?" },
+
+  // Section 9 Mémoire
+  { section: 9, text: "Rencontrez-vous des difficultés de mémoire, comme oublier des informations ou perdre le sens de l’orientation (par exemple, retrouver votre chemin) ?" },
+
+  // Section 10 Impact fonctionnel et soutien
+  { section: 10, text: "Dans quelle mesure ces difficultés ont-elles affecté votre capacité à travailler, à vous occuper de votre domicile ou à entretenir des relations avec autrui ?" },
+  { text: "À quel point estimez-vous que votre situation de vie actuelle et vos relations sociales vous apportent du soutien ?" },
+
+  // Section 11 Substances
+  { section: 11, text: "Utilisez-vous du tabac, de l’alcool, des drogues ou de la caféine ? Si oui, veuillez indiquer la fréquence et la quantité." },
+
+  // Section 12 Santé physique/douleurs
+  { section: 12, text: "Ressentez-vous des douleurs chroniques ou un inconfort physique ? Si oui, merci de préciser." },
+  { text: "Y a-t-il d’autres symptômes physiques que vous avez remarqués et qui vous préoccupent ?" },
+  { text: "Comment évalueriez-vous votre état de santé physique global (mauvais, passable, bon, très bon, excellent) ?" },
+
+  // Section 13 Suicidaire
+  { section: 13, text: "Avez-vous eu des pensées selon lesquelles il vaudrait mieux être mort(e) ou vous blesser d’une quelconque manière ?" },
+
+  // Section 14 Sommeil
+  { section: 14, text: "Comment évalueriez-vous la qualité générale de votre sommeil ?" },
+  { text: "Éprouvez-vous des difficultés à vous endormir ou à rester endormi(e) durant la nuit ?" },
+  { text: "Vous réveillez-vous le matin en vous sentant reposé(e) ou encore fatigué(e) ?" },
+  { text: "Avez-vous des troubles du sommeil, tels que des cauchemars, du somnambulisme ou des réveils fréquents ?" },
+  { text: "Utilisez-vous des médicaments ou des substances pour faciliter le sommeil ?" },
+  { text: "Des changements de mode de vie ou des événements récents ont-ils modifié votre rythme de sommeil ?" },
+
+  // Section 15 Activité physique
+  { section: 15, text: "À quelle fréquence pratiquez-vous une activité physique ou de l’exercice ?" },
+
+  // Section 16 Antecedents psychiatriques
+  { section: 16, text: "Un diagnostic de trouble psychique a-t-il déjà été posé auparavant ?" },
+  { text: "Un traitement pour des difficultés psychiques a-t-il déjà été suivi (thérapie, conseil, médication) ? Si oui, merci de préciser." },
+
+   // Section 17 Psychose
+  { section: 17, text: "Avez-vous perçu des voix que les autres ne semblent pas entendre ?" },
+  { text: "Avez-vous eu des croyances ou des idées que d’autres personnes considèrent comme étranges ou inhabituelles ?" },
+
+  // Section 18 Alimentaire
+  { section: 18, text: "Vous arrive-t-il de vous inquiéter de façon excessive pour votre poids ou votre apparence corporelle ?" },
+  { text: "Avez-vous eu des épisodes de restriction alimentaire importante, de vomissements volontaires, ou de prises alimentaires excessives et incontrôlables ?" },
+
+  // Section 19 Sexuel
+  { section: 19, text: "Avez-vous constaté une baisse notable de votre intérêt ou de votre satisfaction concernant votre sexualité ?" },
+
+  // Section 20 PTSD
+  { section: 20, text: "Avez-vous été exposé(e) à un événement traumatique qui continue à vous perturber (cauchemars, flashbacks, évitement) ?" },
+  { text: "Présentez-vous des réactions de stress importantes en lien avec des souvenirs douloureux ?" },
+
+  // Section 21 Hyperativité/attention
+  { section: 21, text: "Rencontrez-vous souvent des difficultés à rester concentré(e), à terminer ce que vous commencez, ou à rester en place ?" },
+  { text: "Êtes-vous fréquemment distrait(e) ou ressentez-vous une agitation intérieure ou physique inhabituelle ?" },
+
+  // Section 22 Maltraitance
+  { section: 22, text: "Avez-vous été exposé(e) à des situations de violence ou de maltraitance ? Si oui, souhaitez-vous en parler ?" },
+  // Section 23 Objectifs de la consultatation
+  { section: 23, text: "Y a-t-il un sujet spécifique que vous souhaitez aborder lors de la consultation ?" },
+  { text: "Quels sont vos objectifs ou attentes en consultant actuellement ?" }
+// --- Variables ---
+
 ];
 
 let responses = [];
@@ -98,10 +216,18 @@ window.speechSynthesis.onvoiceschanged = function() {
   frenchVoice = voices.find(v => v.lang.startsWith("fr"));
 };
 
-function speak(txt, cb) {
+ function speak(txt, cb) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(txt);
+
+  // Nettoyage du HTML pour éviter que les balises comme <b> soient lues
+  const tmp = document.createElement("div");
+  tmp.innerHTML = txt;
+  const cleanText = tmp.textContent || tmp.innerText || "";
+ 
+ // const utter = new SpeechSynthesisUtterance(txt); 
+const utter = new SpeechSynthesisUtterance(cleanText);
+
   utter.lang = "fr-FR";
   if (frenchVoice) utter.voice = frenchVoice;
   if (typeof cb === "function") utter.onend = cb;
@@ -343,7 +469,7 @@ window.onload = function() {
     document.getElementById('btnCommencer').style.display = 'none';
     // Affichage de l'intro avec innerHTML
     introText.innerHTML = `
-      <p>Je vais vous poser quelques questions se rapportant à ces dernières semaines.</p>
+      <p>Je vais vous poser quelques questions sur les dernières semaines.</p>
       <p>Les questions sont regroupées en sections.</p>
       <p>Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant <b>point</b> ou <b>valider</b> quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire.</p>
       <p>Si votre ordinateur demande “ce site veut utiliser le micro”, répondez <b>autoriser</b>.</p>
@@ -353,7 +479,7 @@ window.onload = function() {
     `;
     document.getElementById('intro').style.display = "block";
     setTimeout(function() {
-      speak("Je vais vous poser quelques questions se rapportant à ces dernières semaines. Les questions sont regroupées en sections. Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant point ou valider quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire. Si votre ordinateur demande d'utiliser le micro, répondez autoriser. En cas d’erreur, vous pouvez utiliser le micro ou saisir votre réponse au clavier. À la fin, un commentaire global est possible et vous pourrez corriger, copier vos réponses ou les enregistrer en PDF grâce aux boutons prévus à cet effet. Entrez maintenant un code à 4 chiffres de votre choix en les tapant sur le clavier.", function() {
+      speak("Je vais vous poser quelques questions sur les dernières semaines. Les questions sont regroupées en sections. Parlez lentement et distinctement si vous utilisez le micro, mais terminez toujours en disant point ou valider quand vous avez fini. Vous pouvez aussi faire une pause ou ajouter un commentaire. Si votre ordinateur demande d'utiliser le micro, répondez autoriser. En cas d’erreur, vous pouvez utiliser le micro ou saisir votre réponse au clavier. À la fin, un commentaire global est possible et vous pourrez corriger, copier vos réponses ou les enregistrer en PDF grâce aux boutons prévus à cet effet. Entrez maintenant un code à 4 chiffres de votre choix en les tapant sur le clavier.", function() {
         codeInput.focus();
       });
     }, 300);
