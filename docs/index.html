@@ -319,7 +319,9 @@ function startRecognition(callback) {
 }
 
 
-// --- Affichage d'une question ---
+// -----------------------------------------------------------------
+// Affichage d'une question (zone réponse, boutons, micro, dynamique)
+// -----------------------------------------------------------------
 function askQuestion(idx) {
   let transcriptAccumule = "";
 
@@ -340,48 +342,98 @@ function askQuestion(idx) {
   vocalTip.style.display = "block";
   vocalTip.innerHTML = '<b>Astuce :</b> <span style="color:#b30000">Terminez votre réponse en disant "zut".</span>';
 
-  // ---------------------
-  // Création dynamique de la zone de réponse (textarea + bouton micro + correction)
-  // ---------------------
+  // ----------------------------------------------------------------
+  // Création dynamique de la zone de réponse (textarea + boutons + micro)
+  // ----------------------------------------------------------------
   let oldZone = document.getElementById("zoneResponse");
   if (oldZone) oldZone.remove();
   let responseZone = document.createElement("div");
   responseZone.id = "zoneResponse";
   responseZone.style.marginTop = "1.3em";
 
-// Création du champ de réponse (textarea ou input)
+  // Création du champ de réponse (textarea responsive)
   let input = document.createElement("textarea");
   input.id = "inputResponse";
   input.style.padding = "0.5em";
-  input.style.width = "90%";
+  input.style.fontSize = "1.2em";
   input.style.minHeight = "3em";
-  input.style.fontSize = "1.3em";// ici pour agrandir l'affichage de la réponse
   input.style.resize = "vertical";
   input.placeholder = "Répondez ici ou utilisez le micro...";
-
-  // Agrandit automatiquement le textarea en fonction du contenu
+  // Responsive largeur mobile/desktop
+  input.style.width = "100%";
+  input.style.maxWidth = "100vw";
+  // Agrandit automatiquement le textarea selon la saisie
   input.addEventListener('input', function() {
     this.style.height = "auto";
     this.style.height = (this.scrollHeight) + "px";
   });
-
   // Restaure la réponse déjà saisie si existante
   if (responses[idx]) input.value = responses[idx];
-
-  // Ajoute le textarea à la zone de réponse
   responseZone.appendChild(input);
-//---------------------------------
-  // Ajout du bouton micro
+
+  // ----------------------------------------------------------------
+  // Création de la zone de correction/validation (Valider, Corriger, Pause)
+  // ----------------------------------------------------------------
+  let correctionZone = document.createElement("div");
+  correctionZone.style.marginTop = "0.7em";
+  responseZone.appendChild(correctionZone);
+
+  // Bouton "Valider"
+  let btnValider = document.createElement("button");
+  btnValider.textContent = "Valider";
+  btnValider.style.background = "#20b05a";
+  btnValider.style.color = "#fff";
+  btnValider.style.marginRight = "1em";
+  btnValider.onclick = function() {
+    responses[idx] = input.value.trim();
+    correctionZone.innerHTML = ""; // Vide la zone des boutons
+    afficherPauseEtCorriger(input.value.trim());
+  };
+  correctionZone.appendChild(btnValider);
+
+  // Bouton "Corriger"
+  let btnCorriger = document.createElement("button");
+  btnCorriger.textContent = "Corriger";
+  btnCorriger.style.background = "#fb8c00";
+  btnCorriger.style.color = "#fff";
+  btnCorriger.style.marginRight = "1em";
+  btnCorriger.onclick = function() {
+    input.value = "";
+    input.focus();
+  };
+  correctionZone.appendChild(btnCorriger);
+
+  // Bouton "Pause"
+  let btnPause = document.createElement("button");
+  btnPause.textContent = "Pause";
+  btnPause.style.background = "#9486db";
+  btnPause.style.color = "#fff";
+  btnPause.style.marginRight = "1em";
+  btnPause.onclick = function() {
+    alert("Pause activée !");
+  };
+  correctionZone.appendChild(btnPause);
+
+  // ----------------------------------------------------------------
+  // Validation clavier (Entrée)
+  // Entrée : valide et affiche Pause/Corriger dynamiquement
+  // Shift+Entrée : retour à la ligne
+  // ----------------------------------------------------------------
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      responses[idx] = input.value.trim();
+      correctionZone.innerHTML = "";
+      afficherPauseEtCorriger(input.value.trim());
+    }
+  });
+
+  // -----------------------------------------------------------------
+  // Ajout du bouton micro EN BAS de la zone réponse (jamais caché sur mobile)
+  // -----------------------------------------------------------------
   let btnVocal = document.createElement("button");
   btnVocal.type = "button";
-  btnVocal.style.marginLeft = "1em";
-  btnVocal.style.lineHeight = "1.3";
-  btnVocal.style.display = "flex";
-  btnVocal.style.flexDirection = "column";
-  btnVocal.style.alignItems = "center";
-  btnVocal.id = "btnVocal";
-
-  // Gestion dynamique du texte selon état du micro
+  // Gestion dynamique du texte selon l'état du micro
   if (!checkSpeechRecognitionSupport()) {
     btnVocal.innerHTML =
       '<span style="color:#b30000;">Micro non supporté par ce navigateur 😕</span>';
@@ -401,36 +453,32 @@ function askQuestion(idx) {
       '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Cliquez ici pour répondre par la voix</span>';
     btnVocal.disabled = false;
   }
+  btnVocal.id = "btnVocal";
+  btnVocal.style.display = "flex";
+  btnVocal.style.flexDirection = "column";
+  btnVocal.style.alignItems = "center";
+  btnVocal.style.marginTop = "1.5em";
+  btnVocal.style.marginLeft = "1em";
+  btnVocal.style.lineHeight = "1.3";
   responseZone.appendChild(btnVocal);
-//-------------------
-  // Création de la zone de correction/validation
-  let correctionZone = document.createElement("div");
-  correctionZone.style.marginTop = "0.7em";
-  responseZone.appendChild(correctionZone);
 
+  // ----------------------------------------------------------------
+  // Insertion de la zone de réponse dans le DOM et focus
+  // ----------------------------------------------------------------
   questionEl.parentNode.appendChild(responseZone);
   input.focus();
 
-  // ---------------------
-  // Validation clavier (Entrée)
-  // ---------------------
-  input.addEventListener("keydown", function(e) {
-    // Shift+Entrée = retour à la ligne
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      responses[idx] = input.value.trim();
-      correctionZone.innerHTML = "";
-      afficherPauseEtCorriger(input.value.trim());
-    }
-  });
-
+  // ----------------------------------------------------------------
   // Relance la reconnaissance vocale au clic sur le bouton micro
+  // ----------------------------------------------------------------
   btnVocal.onclick = function() {
     correctionZone.innerHTML = "";
     autoRecognition(0);
   };
 
-  // Lance la consigne vocale une seule fois
+  // ----------------------------------------------------------------
+  // Lance la consigne vocale une seule fois au début
+  // ----------------------------------------------------------------
   if (!consigneVocaleDejaLue) {
     consigneVocaleDejaLue = true;
     speak("Pour valider, terminez chaque réponse en disant zut.", function() {
@@ -481,15 +529,15 @@ function askQuestion(idx) {
           afficherZoneValiderOuAttente("Je n'ai rien entendu. Répondez à nouveau ou validez si tout est correct.");
           setTimeout(() => autoRecognition(relanceCount + 1), delaiRecoRelance);
         } else {
-          // Après trop de tentatives sans réponse, invite à valider ou recommencer
+          // Après trop de tentatives sans réponse, invite à valider ou réessayer
           afficherZoneValiderOuAttente("Aucune réponse détectée après plusieurs tentatives. Vous pouvez valider ou réessayer.");
         }
       }
     });
 
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     // Affiche les boutons de validation et de correction lors des relances
-    // ----------------------------------------------------------------
+    // ------------------------------------------------------------
     function afficherZoneValiderOuAttente(message) {
       correctionZone.innerHTML = `
         <button id="btnValiderManuel" style="background:#20b05a;">Valider</button>
@@ -518,7 +566,14 @@ function askQuestion(idx) {
   // et gère le passage automatique à la question suivante
   // ----------------------------------------------------------------
   function afficherPauseEtCorriger(currentRep) {
-    // Ajout du bouton correction après reconnaissance vocale ou validation clavier
+    // Calcul du délai dynamique selon la longueur de la réponse
+    let cleanLength = currentRep.length;
+    let minDelay = 1200;
+    let maxDelay = 9000;
+    let msParCaractere = 40;
+    let delay = Math.min(maxDelay, minDelay + cleanLength * msParCaractere);
+
+    // Ajout du bouton Corriger
     let btnRetry = document.createElement("button");
     btnRetry.textContent = "Corriger";
     btnRetry.style.background = "#fb8c00";
@@ -531,27 +586,6 @@ function askQuestion(idx) {
     btnPause.style.background = "#7a7adb";
     btnPause.style.marginLeft = "1em";
     correctionZone.appendChild(btnPause);
-
-    // Afficher, pause, corriger.Calcul du délai dynamique selon la longueur de la réponse
-    //let cleanLength = currentRep.length;
-  let cleanLength = currentRep.length;
-  let minDelay = 1200;
-  let maxDelay = 9000;
-  let msParCaractere = 40;
-  let delay = Math.min(maxDelay, minDelay + cleanLength * msParCaractere);
-  // ...
-
-
-//let cleanLength = currentRep.length;
-    //let delay;
-    ///delay = 1200; // Oui/Non
-    //} else if (cleanLength < 70) {
-      //delay = 4000; // Une phrase courte
-    //} else if (cleanLength < 160) {
-     // delay = 7000; // Réponse moyenne (2-3 lignes)
-    //} else {
-     // delay = 9000; // Très longue réponse
-    //}
 
     // Gestion du timer et du bouton Pause/Reprendre
     let timerPaused = false;
@@ -613,7 +647,6 @@ function stripHTML(html) {
   div.innerHTML = html;
   return div.textContent || div.innerText || "";
 }
-
 
 //-----------------
 // Fonction de gestion du passage à la question suivante
