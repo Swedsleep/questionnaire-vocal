@@ -2,41 +2,23 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Questionnaire DSM-5 (Voix)</title>
   <style>
-
-//Responsive Design pour smartphone (max-width: 700px),    - Rend les //questions, réponses et boutons adaptatifs,    - Empêche le contenu de //dépasser sur petit écran,    - Ajuste tailles, marges et paddings pour //mobile
-@media (max-width: 700px) {
-  body {
-    margin: 0.5em;
-  }
-  #main, #questionnaire, #summary {
-    padding: 0.6em;
-    max-width: 99vw;
-    margin: 0.5em auto 0.5em auto;
-    border-radius: 0.8em;
-    box-shadow: 0 2px 8px #0056cc22;
-  }
-  #question {
-    font-size: 1em;
-    padding: 0.3em 0.1em;
-  }
-  textarea#inputResponse {
-    width: 99vw !important;
-    max-width: 99vw !important;
-    font-size: 1.13em;
-    min-height: 2.4em;
-  }
-  button {
-    width: 97vw;
-    min-width: 120px;
-    font-size: 1em;
-    padding: 0.8em 0.2em;
-  }
-}
+    /* Responsive Design pour smartphone (max-width: 700px) */
+    /* Rend les questions, réponses et boutons adaptatifs */
+    @media (max-width: 700px) {
+      body { margin: 0.5em; }
+      #main, #questionnaire, #summary {
+        padding: 0.6em; max-width: 99vw; margin: 0.5em auto 0.5em auto;
+        border-radius: 0.8em; box-shadow: 0 2px 8px #0056cc22;
+      }
+      #question { font-size: 1em; padding: 0.3em 0.1em; }
+      textarea#inputResponse {
+        width: 99vw !important; max-width: 99vw !important; font-size: 1.13em; min-height: 2.4em;
+      }
+      button { width: 97vw; min-width: 120px; font-size: 1em; padding: 0.8em 0.2em; }
+    }
     body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
     #main, #questionnaire, #summary { background: #fff; padding: 2em; border-radius: 1em; box-shadow: 0 2px 10px #0056cc22; max-width: 650px; margin: 3em auto 2em; }
     h1, h2 { color: #0056cc; font-weight: bold; }
@@ -47,14 +29,9 @@
     button:disabled { background: #aaa; }
     #globalComment { width: 98%; min-height: 40px; font-size: 1.05em; padding: 0.5em; border-radius: 0.6em; border: 1px solid #bbb; margin-top: 0.7em; }
     #vocalTip {
-      font-size:1.13em;
-      margin:0.8em 0 1.2em 0;
-      color:#b30000;
-      background: #fff8c2;
-      border-left: 6px solid #ff9900;
-      padding: 0.6em 1em;
-      font-weight: bold;
-      display: block;
+      font-size:1.13em; margin:0.8em 0 1.2em 0; color:#b30000;
+      background: #fff8c2; border-left: 6px solid #ff9900;
+      padding: 0.6em 1em; font-weight: bold; display: block;
     }
   </style>
 </head>
@@ -94,36 +71,12 @@
 
 <script>
 // ---------------------------------
-// QUESTIONS À MODIFIER ICI
+// CHOISIR LE MODULE DE QUESTIONS ICI
 // ---------------------------------
-  // Section 1 
-  // Section 2 Antecedents medicaux
-  // Section 3 Anxiété
-  // Section 4 Depression
-  // Section 5 TOC
-  // Section 6 Irritabilité et colère
-  // Section 7 Maniaque/Hypomaniaque
-  // Section 8 Dissociation
-  // Section 9 Mémoire
-  // Section 10 Impact fonctionnel et soutien
-  // Section 11 Substances
-  // Section 12 Santé physique/douleurs
-  // Section 13 Suicidaire
-  // Section 14 Sommeil
-  // Section 15 Activité physique
-  // Section 16 Antecedents psychiatriques
-   // Section 17 Psychose
-  // Section 18 Alimentaire
-  // Section 19 Sexuel
-  // Section 20 PTSD
-  // Section 21 Hyperativité/attention
-  // Section 22 Maltraitance
-  // Section 23 Objectifs de la consultatation
 
-
-
+// ici COMMENCE le module de questions
 let questions = [
-   // Section 1 
+// Section 1 
   { section: 1, text: "Quel est votre âge?" },
   { text: "Quel est votre sexe ?" },
   { text: "Quel est votre profession ?" },
@@ -195,7 +148,7 @@ let questions = [
   { section: 16, text: "Un diagnostic de trouble psychique a-t-il déjà été posé auparavant ?" },
   { text: "Un traitement pour des difficultés psychiques a-t-il déjà été suivi (thérapie, conseil, médication) ? Si oui, merci de préciser." },
 
-   // Section 17 Psychose
+  // Section 17 Psychose
   { section: 17, text: "Avez-vous perçu des voix que les autres ne semblent pas entendre ?" },
   { text: "Avez-vous eu des croyances ou des idées que d’autres personnes considèrent comme étranges ou inhabituelles ?" },
 
@@ -210,19 +163,23 @@ let questions = [
   { section: 20, text: "Avez-vous été exposé à un événement traumatique qui continue à vous perturber (cauchemars, flashbacks, évitement) ?" },
   { text: "Présentez-vous des réactions de stress importantes en lien avec des souvenirs douloureux ?" },
 
-  // Section 21 Hyperativité/attention
+  // Section 21 Hyperactivité/attention
   { section: 21, text: "Rencontrez-vous souvent des difficultés à rester concentré, à terminer ce que vous commencez, ou à rester en place ?" },
   { text: "Êtes-vous fréquemment distrait ou ressentez-vous une agitation intérieure ou physique inhabituelle ?" },
 
   // Section 22 Maltraitance
   { section: 22, text: "Avez-vous été exposé à des situations de violence ou de maltraitance ? Si oui, souhaitez-vous en parler ?" },
 
-  // Section 23 Objectifs de la consultatation
+  // Section 23 Objectifs de la consultation
   { section: 23, text: "Y a-t-il un sujet spécifique que vous souhaitez aborder lors de la consultation ?" },
   { text: "Quels sont vos objectifs ou attentes en consultant actuellement ?" }
-// --- Variables ---
-
 ];
+
+// ici FINIT le module des questions
+
+// ---------------------------------
+// FIN CHOIX DU MODULE
+// ---------------------------------
 
 let responses = [];
 let current = 0, codePerso = "", autoNextTimeout = null, frenchVoice = null, consigneVocaleDejaLue = false;
@@ -249,10 +206,7 @@ window.speechSynthesis.onvoiceschanged = function() {
   const voices = window.speechSynthesis.getVoices();
   frenchVoice = voices.find(v => v.lang.startsWith("fr"));
 };
-// Fonction synthese vocale
-
-// Fonction synthèse vocale (inchangée)
-// --------------------
+// Fonction synthèse vocale
 function speak(txt, cb) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -281,7 +235,6 @@ function checkSpeechRecognitionSupport() {
 // Instance unique de reconnaissance vocale pour toute la session
 // --------------------
 let recognition = null;
-
 if (('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window)) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
@@ -318,6 +271,36 @@ function startRecognition(callback) {
   recognition.start();
 }
 
+// ---------------------------------
+// DEMARRAGE DU QUESTIONNAIRE
+// ---------------------------------
+document.getElementById('btnCommencer').onclick = function() {
+  // Calcul dynamique du nombre de questions et sections
+  let nbQuestions = questions.length;
+  let nbSections = new Set(questions.filter(q => q.section).map(q => q.section)).size;
+  // affiche le texte d'intro dynamique selon le module choisi
+  introText.innerHTML = `
+    <b>Le questionnaire comporte ${nbQuestions} questions réparties en ${nbSections} sections.</b>
+    <br>Merci de répondre à chaque question aussi précisément que possible.<br>
+    <span style="color:#888;font-size:0.9em;">(Le nombre de questions et de sections dépend du module choisi)</span>
+  `;
+
+  // Affiche l'intro, masque le reste
+  mainDiv.style.display = "none";
+  document.getElementById("intro").style.display = "block";
+
+  // On attend le clic sur "Démarrer le questionnaire"
+  startBtn.onclick = function() {
+    document.getElementById("intro").style.display = "none";
+    questionnaireDiv.style.display = "block";
+    askQuestion(0);
+  };
+};
+
+// ---------------------------------
+// (fonction askQuestion commence ici…)
+// ---------------------------------
+
 
 // -----------------------------------------------------------------
 // Affichage d'une question (zone réponse, boutons, micro, dynamique)
@@ -340,7 +323,7 @@ function askQuestion(idx) {
 
   // Conseils et instructions à afficher à chaque question
   vocalTip.style.display = "block";
-  vocalTip.innerHTML = '<b>Astuce :</b> <span style="color:#b30000">Terminez votre réponse en disant "zut".</span>';
+vocalTip.innerHTML = '<b>Astuce :</b> Terminez votre réponse en disant "<span style="color:#d10000; font-weight:bold;">ZUT</span>".';
 
   // ----------------------------------------------------------------
   // Création dynamique de la zone de réponse (textarea + boutons + micro)
