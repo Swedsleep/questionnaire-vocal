@@ -39,7 +39,10 @@
   <div id="main">
     <h1>Questionnaire DSM-5 (Voix)</h1>
     <div style="margin:1.5em 0">
-      <button id="btnCommencer" style="font-size:1.22em;padding:0.9em 3em;">Commencer</button>
+
+
+ <button id="btnCommencer" style="font-size:1.22em;padding:0.9em 3em;">Commencer</button> 
+
     </div>
     <div id="intro" style="display:none;">
       <div id="introText"></div>
@@ -75,7 +78,10 @@
 // ---------------------------------
 
 // ici COMMENCE le module de questions
+
 let questions = [
+  // ... toutes les questions ici
+
 // Section 1 
   { section: 1, text: "Quel est votre âge?" },
   { text: "Quel est votre sexe ?" },
@@ -148,7 +154,7 @@ let questions = [
   { section: 16, text: "Un diagnostic de trouble psychique a-t-il déjà été posé auparavant ?" },
   { text: "Un traitement pour des difficultés psychiques a-t-il déjà été suivi (thérapie, conseil, médication) ? Si oui, merci de préciser." },
 
-  // Section 17 Psychose
+   // Section 17 Psychose
   { section: 17, text: "Avez-vous perçu des voix que les autres ne semblent pas entendre ?" },
   { text: "Avez-vous eu des croyances ou des idées que d’autres personnes considèrent comme étranges ou inhabituelles ?" },
 
@@ -163,16 +169,18 @@ let questions = [
   { section: 20, text: "Avez-vous été exposé à un événement traumatique qui continue à vous perturber (cauchemars, flashbacks, évitement) ?" },
   { text: "Présentez-vous des réactions de stress importantes en lien avec des souvenirs douloureux ?" },
 
-  // Section 21 Hyperactivité/attention
+  // Section 21 Hyperativité/attention
   { section: 21, text: "Rencontrez-vous souvent des difficultés à rester concentré, à terminer ce que vous commencez, ou à rester en place ?" },
   { text: "Êtes-vous fréquemment distrait ou ressentez-vous une agitation intérieure ou physique inhabituelle ?" },
 
   // Section 22 Maltraitance
   { section: 22, text: "Avez-vous été exposé à des situations de violence ou de maltraitance ? Si oui, souhaitez-vous en parler ?" },
 
-  // Section 23 Objectifs de la consultation
+  // Section 23 Objectifs de la consultatation
   { section: 23, text: "Y a-t-il un sujet spécifique que vous souhaitez aborder lors de la consultation ?" },
   { text: "Quels sont vos objectifs ou attentes en consultant actuellement ?" }
+
+// --- fin des questions
 ];
 
 // ici FINIT le module des questions
@@ -235,6 +243,7 @@ function checkSpeechRecognitionSupport() {
 // Instance unique de reconnaissance vocale pour toute la session
 // --------------------
 let recognition = null;
+
 if (('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window)) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
@@ -272,29 +281,30 @@ function startRecognition(callback) {
 }
 
 // ---------------------------------
-// DEMARRAGE DU QUESTIONNAIRE
+// CHARGEMENT DYNAMIQUE DU MODULE DE QUESTIONS
 // ---------------------------------
 document.getElementById('btnCommencer').onclick = function() {
-  // Calcul dynamique du nombre de questions et sections
-  let nbQuestions = questions.length;
-  let nbSections = new Set(questions.filter(q => q.section).map(q => q.section)).size;
-  // affiche le texte d'intro dynamique selon le module choisi
-  introText.innerHTML = `
-    <b>Le questionnaire comporte ${nbQuestions} questions réparties en ${nbSections} sections.</b>
-    <br>Merci de répondre à chaque question aussi précisément que possible.<br>
-    <span style="color:#888;font-size:0.9em;">(Le nombre de questions et de sections dépend du module choisi)</span>
-  `;
+  let fichier = document.getElementById("moduleSelect").value;
+  // Supprimer un ancien module si déjà chargé
+  let oldScript = document.getElementById("dynamicModule");
+  if (oldScript) oldScript.remove();
 
-  // Affiche l'intro, masque le reste
-  mainDiv.style.display = "none";
-  document.getElementById("intro").style.display = "block";
-
-  // On attend le clic sur "Démarrer le questionnaire"
-  startBtn.onclick = function() {
-    document.getElementById("intro").style.display = "none";
-    questionnaireDiv.style.display = "block";
-    askQuestion(0);
+  // Charger le nouveau module (questions.js, etc.)
+  let script = document.createElement('script');
+  script.src = fichier;
+  script.id = "dynamicModule";
+  script.onload = function() {
+    // Lancer le questionnaire après le chargement du module
+    if (typeof questions !== "undefined" && questions.length > 0) {
+      // Démarrage classique du quiz (intro ou direct)
+      mainDiv.style.display = "none";
+      questionnaireDiv.style.display = "block";
+      askQuestion(0);
+    } else {
+      alert("Le module de questions n'a pas pu être chargé.");
+    }
   };
+  document.body.appendChild(script);
 };
 
 // ---------------------------------
@@ -323,7 +333,8 @@ function askQuestion(idx) {
 
   // Conseils et instructions à afficher à chaque question
   vocalTip.style.display = "block";
-vocalTip.innerHTML = '<b>Astuce :</b> Terminez votre réponse en disant "<span style="color:#d10000; font-weight:bold;">ZUT</span>".';
+ vocalTip.innerHTML = '<b>En vocal</b> terminez réponse en disant "<span style="color:#0056cc;font-weight:bold;">ZUT</span>",au clavier <span style="color:#0056cc;font-weight:bold;">RETOUR</span>.';
+
 
   // ----------------------------------------------------------------
   // Création dynamique de la zone de réponse (textarea + boutons + micro)
@@ -355,47 +366,48 @@ vocalTip.innerHTML = '<b>Astuce :</b> Terminez votre réponse en disant "<span s
   responseZone.appendChild(input);
 
   // ----------------------------------------------------------------
-  // Création de la zone de correction/validation (Valider, Corriger, Pause)
-  // ----------------------------------------------------------------
-  let correctionZone = document.createElement("div");
-  correctionZone.style.marginTop = "0.7em";
-  responseZone.appendChild(correctionZone);
+  
+// Création de la zone de correction/validation (Corriger, Pause, Valider)
+// ----------------------------------------------------------------
+let correctionZone = document.createElement("div");
+correctionZone.style.marginTop = "0.7em";
+responseZone.appendChild(correctionZone);
 
-  // Bouton "Valider"
-  let btnValider = document.createElement("button");
-  btnValider.textContent = "Valider";
-  btnValider.style.background = "#20b05a";
-  btnValider.style.color = "#fff";
-  btnValider.style.marginRight = "1em";
-  btnValider.onclick = function() {
-    responses[idx] = input.value.trim();
-    correctionZone.innerHTML = ""; // Vide la zone des boutons
-    afficherPauseEtCorriger(input.value.trim());
-  };
-  correctionZone.appendChild(btnValider);
+// Bouton "Corriger"
+let btnCorriger = document.createElement("button");
+btnCorriger.textContent = "Corriger";
+btnCorriger.style.background = "#fb8c00";
+btnCorriger.style.color = "#fff";
+btnCorriger.style.marginRight = "1em";
+btnCorriger.onclick = function() {
+  input.value = "";
+  input.focus();
+};
+correctionZone.appendChild(btnCorriger);
 
-  // Bouton "Corriger"
-  let btnCorriger = document.createElement("button");
-  btnCorriger.textContent = "Corriger";
-  btnCorriger.style.background = "#fb8c00";
-  btnCorriger.style.color = "#fff";
-  btnCorriger.style.marginRight = "1em";
-  btnCorriger.onclick = function() {
-    input.value = "";
-    input.focus();
-  };
-  correctionZone.appendChild(btnCorriger);
+// Bouton "Pause"
+let btnPause = document.createElement("button");
+btnPause.textContent = "Pause";
+btnPause.style.background = "#9486db";
+btnPause.style.color = "#fff";
+btnPause.style.marginRight = "1em";
+btnPause.onclick = function() {
+  alert("Pause activée !");
+};
+correctionZone.appendChild(btnPause);
 
-  // Bouton "Pause"
-  let btnPause = document.createElement("button");
-  btnPause.textContent = "Pause";
-  btnPause.style.background = "#9486db";
-  btnPause.style.color = "#fff";
-  btnPause.style.marginRight = "1em";
-  btnPause.onclick = function() {
-    alert("Pause activée !");
-  };
-  correctionZone.appendChild(btnPause);
+// Bouton "Valider"
+let btnValider = document.createElement("button");
+btnValider.textContent = "Valider";
+btnValider.style.background = "#20b05a";
+btnValider.style.color = "#fff";
+btnValider.style.marginRight = "1em";
+btnValider.onclick = function() {
+  responses[idx] = input.value.trim();
+  correctionZone.innerHTML = ""; // Vide la zone des boutons
+  afficherPauseEtCorriger(input.value.trim());
+};
+correctionZone.appendChild(btnValider);
 
   // ----------------------------------------------------------------
   // Validation clavier (Entrée)
