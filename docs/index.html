@@ -1,10 +1,18 @@
-<!-- version 30 -->
+<!--
+  VERSION DU QUESTIONNAIRE
+  ------------------------
+  Version 30
+  À CHAQUE MISE À JOUR :
+    - Mettre à jour le numéro dans <title>
+    - Mettre à jour la version affichée (haut, bas de page)
+    - Mettre à jour le paramètre version dans l’appel du module JS (?v=30)
+-->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Questionnaire DSM-5 (Voix)</title>
+  <title>Questionnaire DSM-5 (Voix) -v30 </title>
   <style>
     /* Responsive Design pour smartphone (max-width: 700px) */
     /* Rend les questions, réponses et boutons adaptatifs */
@@ -39,8 +47,11 @@
 <body>
   <div id="main">
     <h1>Questionnaire DSM-5 (Voix)</h1>
+ <!-- Affichage de la version juste sous le titre -->
+    <div style="font-size:0.9em; color:#888; text-align:right; margin-bottom:1em;">
+      Version 30
+    </div>
     <div style="margin:1.5em 0">
-
 
  <button id="btnCommencer" style="font-size:1.22em;padding:0.9em 3em;">Commencer</button> 
 
@@ -751,6 +762,7 @@ introText.innerHTML = `<p>Je vais vous poser une liste de 52 questions se rappor
       startBtn.click();
     }
   });
+// Toutes les reponses du questionnaire copiées dans le presse-papier (pour coller dans un  mail)
   copyBtn.onclick = function() {
     const txt = "Code : " + codePerso + "\n"
       + questions.map((q, i) => "Section " + (q.section||"") + " — " + q.text + " : " + (responses[i] || "(Aucune réponse)")).join("\n")
@@ -758,8 +770,13 @@ introText.innerHTML = `<p>Je vais vous poser une liste de 52 questions se rappor
     navigator.clipboard.writeText(txt);
     alert("Réponses copiées !");
   };
+// impression PDF de la page entiere (y compris le resumé)
   pdfBtn.onclick = function() { window.print(); };
 };
 </script>
+<! ---Affichage discret de la version en bas de page ---> 
+<footer style="text-align:center; font-size:0.85em; color:#aaa; margin-top:2em;">
+  Version 30 – &copy; 2024 SwedSleep
+</footer>
 </body>
 </html>
