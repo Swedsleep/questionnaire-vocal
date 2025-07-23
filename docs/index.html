@@ -76,7 +76,8 @@
 // ---------------------------------
 // CHOISIR LE MODULE DE QUESTIONS ICI
 // ---------------------------------
-
+//
+let microActif = true; // ← ici, visible partout dans le script
 // ici COMMENCE le module de questions
 
 let questions = [
@@ -333,8 +334,9 @@ function askQuestion(idx) {
 
   // Conseils et instructions à afficher à chaque question
   vocalTip.style.display = "block";
- vocalTip.innerHTML = '<b>En vocal</b> terminez réponse en disant "<span style="color:#0056cc;font-weight:bold;">ZUT</span>",au clavier <span style="color:#0056cc;font-weight:bold;">RETOUR</span>.';
+ vocalTip.innerHTML = '<b>En vocal :</b> Terminez votre réponse en disant "<span style="color:#b0056cc;font-weight:bold;">ZUT</span>",au clavier <span style="color:#0056cc;font-weight:bold;">RETOUR</span>.';
 
+//vocalTip.innerHTML = '<b>En vocal :</b> Terminez votre réponse en disant "<span  //style="color:#b30000;font-weight:bold;">ZUT</span>".';
 
   // ----------------------------------------------------------------
   // Création dynamique de la zone de réponse (textarea + boutons + micro)
@@ -428,34 +430,53 @@ correctionZone.appendChild(btnValider);
   // -----------------------------------------------------------------
   let btnVocal = document.createElement("button");
   btnVocal.type = "button";
-  // Gestion dynamique du texte selon l'état du micro
-  if (!checkSpeechRecognitionSupport()) {
+
+// Fonction de mise à jour dynamique du texte selon l'état du micro
+function majTexteBtnMicro() {
+ if (!checkSpeechRecognitionSupport()) {
+    // Cas navigateur non supporté
     btnVocal.innerHTML =
       '<span style="color:#b30000;">Micro non supporté par ce navigateur 😕</span>';
     btnVocal.disabled = true;
+
+  } else if (!microActif) {
+    // Micro désactivé volontairement (clavier uniquement)
+    btnVocal.innerHTML =
+      '<span>🔇 Micro fermé, clavier seulement</span>' +
+      '<span style="font-size:0.97em;color:#1976d2;margin-top:2px;">Cliquez pour activer le micro</span>';
+    btnVocal.disabled = false;
+
   } else if (
+    typeof recognition !== "undefined" &&
     recognition &&
     recognition.state === "inactive" // certains navigateurs supportent .state
   ) {
+    // Micro inactif selon l’API (cas rare mais géré)
     btnVocal.innerHTML =
       '<span>🎤 Réponse orale</span>' +
       '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Micro désactivé ? Cliquez pour activer</span>';
     btnVocal.disabled = false;
+
   } else {
-    // Cas général, invite l'utilisateur à cliquer pour répondre oralement
+    // Cas général : micro actif, prêt à écouter
     btnVocal.innerHTML =
       '<span>🎤 Réponse orale</span>' +
       '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Cliquez ici pour répondre par la voix</span>';
     btnVocal.disabled = false;
   }
-  btnVocal.id = "btnVocal";
-  btnVocal.style.display = "flex";
-  btnVocal.style.flexDirection = "column";
-  btnVocal.style.alignItems = "center";
-  btnVocal.style.marginTop = "1.5em";
-  btnVocal.style.marginLeft = "1em";
-  btnVocal.style.lineHeight = "1.3";
-  responseZone.appendChild(btnVocal);
+}
+
+majTexteBtnMicro();
+
+btnVocal.id = "btnVocal";
+btnVocal.style.display = "flex";
+btnVocal.style.flexDirection = "column";
+btnVocal.style.alignItems = "center";
+btnVocal.style.marginTop = "1.5em";
+btnVocal.style.marginLeft = "1em";
+btnVocal.style.lineHeight = "1.3";
+responseZone.appendChild(btnVocal);
+
 
   // ----------------------------------------------------------------
   // Insertion de la zone de réponse dans le DOM et focus
@@ -466,27 +487,40 @@ correctionZone.appendChild(btnValider);
   // ----------------------------------------------------------------
   // Relance la reconnaissance vocale au clic sur le bouton micro
   // ----------------------------------------------------------------
-  btnVocal.onclick = function() {
-    correctionZone.innerHTML = "";
-    autoRecognition(0);
-  };
+ btnVocal.onclick = function() {
+  // Si le micro est supporté
+if (checkSpeechRecognitionSupport()) {
+    microActif = !microActif;
+    majTexteBtnMicro();
+    correctionZone.innerHTML = "<i>" + (microActif
+      ? "Micro activé : vous pouvez répondre à l'oral."
+      : "Micro désactivé : saisie au clavier uniquement.") + "</i>";
 
-  // ----------------------------------------------------------------
-  // Lance la consigne vocale une seule fois au début
-  // ----------------------------------------------------------------
-  if (!consigneVocaleDejaLue) {
-    consigneVocaleDejaLue = true;
-    speak("Pour valider, terminez chaque réponse en disant zut.", function() {
-      speak(stripHTML(questions[idx].text), function() {
-        autoRecognition(0);
-      });
-    });
-  } else {
-    speak(stripHTML(questions[idx].text), function() {
+    // Si le micro vient d'être activé, on relance la reco immédiatement
+    if (microActif) {
       autoRecognition(0);
-    });
+    }
   }
+};
 
+// ----------------------------------------------------------------
+// Fonction pour lancer la reco vocale uniquement si microActif
+// ----------------------------------------------------------------
+function lancerRecoSiActif() {
+  if (microActif) autoRecognition(0);
+}
+
+// ----------------------------------------------------------------
+// Lance la consigne vocale une seule fois au début
+// ----------------------------------------------------------------
+if (!consigneVocaleDejaLue) {
+  consigneVocaleDejaLue = true;
+  speak("Pour valider, terminez chaque réponse en disant zut.", function() {
+    speak(stripHTML(questions[idx].text), lancerRecoSiActif);
+  });
+} else {
+  speak(stripHTML(questions[idx].text), lancerRecoSiActif);
+}
   // ----------------------------------------------------------------
   // Fonction de reconnaissance vocale automatique, avec relances
   // ----------------------------------------------------------------
