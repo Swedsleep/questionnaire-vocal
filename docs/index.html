@@ -334,10 +334,8 @@ function askQuestion(idx) {
 
   // Conseils et instructions à afficher à chaque question
   vocalTip.style.display = "block";
- vocalTip.innerHTML = '<b>En vocal :</b> Terminez votre réponse en disant "<span style="color:#b0056cc;font-weight:bold;">ZUT</span>",au clavier <span style="color:#0056cc;font-weight:bold;">RETOUR</span>.';
-
-//vocalTip.innerHTML = '<b>En vocal :</b> Terminez votre réponse en disant "<span  //style="color:#b30000;font-weight:bold;">ZUT</span>".';
-
+ vocalTip.innerHTML =  '<b>Au clavier :</b> Terminez votre réponse par la touche <span style="color:#0056cc;font-weight:bold;">RETOUR</span>.<br>' +
+ '<b>En vocal :</b> Terminez en disant "<span style="color:#0056cc;font-weight:bold;">ZUT</span>".';
   // ----------------------------------------------------------------
   // Création dynamique de la zone de réponse (textarea + boutons + micro)
   // ----------------------------------------------------------------
@@ -437,31 +435,39 @@ function majTexteBtnMicro() {
     // Cas navigateur non supporté
     btnVocal.innerHTML =
       '<span style="color:#b30000;">Micro non supporté par ce navigateur 😕</span>';
+    btnVocal.style.background = "#e0e0e0";
+    btnVocal.style.color = "#b30000";
     btnVocal.disabled = true;
 
   } else if (!microActif) {
-    // Micro désactivé volontairement (clavier uniquement)
+    // Micro désactivé volontairement (clavier uniquement), fond bleu texte blanc
     btnVocal.innerHTML =
-      '<span>🔇 Micro fermé, clavier seulement</span>' +
-      '<span style="font-size:0.97em;color:#1976d2;margin-top:2px;">Cliquez pour activer le micro</span>';
+     '<span style="font-weight:bold;">🔇 Micro fermé, clavier seulement</span><br>' +
+      '<span style="font-size:0.97em;color:#fff;margin-top:2px;">Cliquez pour activer le micro</span>';
+    btnVocal.style.background = "#1976d2";
+    btnVocal.style.color = "#fff";
     btnVocal.disabled = false;
 
   } else if (
+
     typeof recognition !== "undefined" &&
     recognition &&
     recognition.state === "inactive" // certains navigateurs supportent .state
   ) {
-    // Micro inactif selon l’API (cas rare mais géré)
+    // Micro inactif fond gris texte blanc message rouge
     btnVocal.innerHTML =
-      '<span>🎤 Réponse orale</span>' +
+      '<span>🎤 Réponse orale</span><br>' +
       '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Micro désactivé ? Cliquez pour activer</span>';
+     btnVocal.style.background = "#bdbdbd";
+    btnVocal.style.color = "#222";
+
     btnVocal.disabled = false;
 
   } else {
     // Cas général : micro actif, prêt à écouter
     btnVocal.innerHTML =
       '<span>🎤 Réponse orale</span>' +
-      '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Cliquez ici pour répondre par la voix</span>';
+      '<span style="font-size:0.97em;color:#b30000;margin-top:2px;">Cliquez ici pour répondre par clavier seulement</span>';
     btnVocal.disabled = false;
   }
 }
@@ -499,6 +505,8 @@ if (checkSpeechRecognitionSupport()) {
     // Si le micro vient d'être activé, on relance la reco immédiatement
     if (microActif) {
       autoRecognition(0);
+      } else {
+      input.focus(); // <-- Place le curseur dans le champ de réponse
     }
   }
 };
@@ -515,7 +523,7 @@ function lancerRecoSiActif() {
 // ----------------------------------------------------------------
 if (!consigneVocaleDejaLue) {
   consigneVocaleDejaLue = true;
-  speak("Pour valider, terminez chaque réponse en disant zut.", function() {
+  speak("En vocal, pour valider, terminez chaque réponse en disant zut.", function() {
     speak(stripHTML(questions[idx].text), lancerRecoSiActif);
   });
 } else {
@@ -760,3 +768,4 @@ introText.innerHTML = `<p>Je vais vous poser une liste de 52 questions se rappor
 </script>
 </body>
 </html>
+
